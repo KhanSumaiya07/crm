@@ -1,0 +1,34 @@
+/* Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+:root {
+  /* Colors */
+  --primary-color: #0d6493;
+  --primary-dark: #09496d;
+  --primary-light: #edf6fb;
+  --background-color: #e4edf4;
+  --sidebar-bg: #e3f1f9;
+  --font-color: #1f1f1f;
+  --subtle-text: #6b7280;
+  --border-color: #dbe2e8;
+
+  --font-family:'Inter', sans-serif;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  font-family: var(--font-family);
+}
+
+/* .main-pages-container{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
