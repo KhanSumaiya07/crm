@@ -1,10 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Mail, Eye, EyeOff, ArrowRight, User } from "lucide-react"
+import { Mail, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react"
 import { AuthInput } from "../components/ui/AuthInput";
 import styles from "../page.module.css"
 import { useRouter } from "next/navigation";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../../lib/firebase"; // adjust path if needed
+import { ToastContainer ,  toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RegisterForm() {
     const router = useRouter(); // initialize router
@@ -12,17 +16,38 @@ export default function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
+     mobile: "",
     email: "",
     password: "",
     confirmPassword: "",
   })
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle registration logic here
-    console.log("Register:", formData)
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (formData.password !== formData.confirmPassword) {
+    toast.error("Passwords do not match");
+    return;
   }
 
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      formData.email,
+      formData.password
+    );
+
+    await updateProfile(userCredential.user, {
+      displayName: formData.name,
+    });
+
+    toast.success("Registration successful!");
+    setTimeout(() => {
+      router.push("/login");
+    }, 1500);
+  } catch (error) {
+    toast.error("already registered");
+  }
+};
   return (
     <div className={styles.container}>
       <div className={styles.card}>
@@ -46,6 +71,16 @@ export default function RegisterForm() {
               placeholder="Enter your full name"
               required
             />
+<AuthInput
+  id="mobile"
+  label="Mobile Number"
+  type="tel"
+  value={formData.mobile}
+  onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+  icon={<Phone size={16} />}
+  placeholder="Enter your mobile number"
+  required
+/>
 
             <AuthInput
               id="email"
@@ -118,6 +153,16 @@ export default function RegisterForm() {
           </div>
         </div>
       </div>
+      <ToastContainer
+  position="top-center"
+  autoClose={4000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  pauseOnHover
+  theme="colored"
+/>
+
     </div>
   )
 }
