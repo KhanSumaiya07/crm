@@ -3,7 +3,7 @@
   --primary-color: #0d6493;
   --primary-dark: #09496d;
   --primary-light: #edf6fb;
-  --background-color: #e4edf4;
+  --background-color: #F6F7F8;
   --sidebar-bg: #e3f1f9;
   --font-color: #1f1f1f;
   --subtle-text: #6b7280;
@@ -20,6 +20,7 @@ body {
 
 body {
   font-family: var(--font-family);
+  background-color: var(--background-color);
 }
 
 * {
