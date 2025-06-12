@@ -1,4 +1,10 @@
+import DashboardHeader from "../components/ui/dashboardHeader";
+
 // app/dashboard/page.jsx
 export default function DashboardPage() {
-  return <h1>Welcome to Dashboard</h1>;
+  return (
+    <>
+    <DashboardHeader title='Dashboard' subtitle='Welcome to Eduwire Portal'/>
+    </>
+  )
 }

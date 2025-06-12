@@ -42,7 +42,7 @@ const Sidebar = () => {
         <div className="menu">
           <ul className="menu-links">
             <li className="nav-link">
-              <Link href="/" className={`sidebar-link ${pathname === "/app/dashboard" ? "active" : ""}`} data-tooltip="Dashboard">
+              <Link href="/dashboard" className={`sidebar-link ${pathname === "/dashboard" ? "active" : ""}`} data-tooltip="Dashboard">
                 <House className="icon" />
                 <span className="nav-text">Dashboard</span>
               </Link>

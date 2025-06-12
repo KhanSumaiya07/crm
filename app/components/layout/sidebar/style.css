@@ -99,7 +99,7 @@
 }
 
 .sidebar-link.active {
-  background-color: #1e40af;
+  background-color: var(--primary-color);
   color: white;
 }
 
