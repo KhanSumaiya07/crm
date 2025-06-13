@@ -234,3 +234,42 @@
     font-size: 14px;
     line-height: 21px;
 }
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Uncomment if needed
+.fullWidth {
+  grid-column: 1 / -1;
+}
+*/
+
+.fieldLabel {
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+  background-color: white;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
