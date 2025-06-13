@@ -1,7 +1,24 @@
-import { Search, BellRing, UserRound } from 'lucide-react';
-import styles from './Navbar.module.css';
+"use client";
+
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase"; // adjust this path if needed
+import { BellRing, UserRound } from "lucide-react";
+import styles from "./Navbar.module.css";
 
 const Navbar = () => {
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserName(user.displayName || "User");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className={styles.navigationBar}>
       <nav className={styles.nav}>
@@ -9,13 +26,8 @@ const Navbar = () => {
           <img src="/eduwire-white-logo.png" alt="Logo" />
         </div>
         <div className={styles.headerRight}>
-          {/* Uncomment to use search */}
-          {/* <div className={styles.searchBtn}>
-            <input type="text" placeholder="search..." />
-            <Search />
-          </div> */}
           <BellRing />
-          <span>Hello, John</span>
+          <span>Hello, {userName}</span>
           <div className={styles.profileUser}>
             <UserRound />
           </div>

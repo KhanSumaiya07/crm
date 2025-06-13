@@ -12,6 +12,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import "./style.css"
+import { logoutUser } from "@/lib/firebase";
 
 const Sidebar = () => {
   const [isClosed, setIsClosed] = useState(true) // Start collapsed
@@ -174,10 +175,10 @@ const Sidebar = () => {
 
         <div className="bottom-content">
           <li className="nav-link">
-            <Link href="#" className="sidebar-link" data-tooltip="Logout">
+            <button onClick={logoutUser} className="sidebar-link" data-tooltip="Logout">
               <LogOut className="icon" />
               <span className="nav-text">Logout</span>
-            </Link>
+            </button>
           </li>
         </div>
       </div>
