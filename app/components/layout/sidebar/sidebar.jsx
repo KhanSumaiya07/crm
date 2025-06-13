@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   HomeIcon as House,
   UserRoundIcon as UserRoundPen,
@@ -7,32 +7,36 @@ import {
   LogOut,
   MapPinIcon as MapPinCheck,
   ChevronRight,
-} from "lucide-react"
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import "./style.css"
-import { logoutUser } from "@/lib/firebase";
+} from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import "./style.css";
 
 const Sidebar = () => {
-  const [isClosed, setIsClosed] = useState(true) // Start collapsed
-  const [openDropdown, setOpenDropdown] = useState(null)
-  const pathname = usePathname()
+  const [isClosed, setIsClosed] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const pathname = usePathname();
+  const router = useRouter();
 
   const handleToggle = () => {
-    setIsClosed(!isClosed)
-    // Close all dropdowns when collapsing
+    setIsClosed(!isClosed);
     if (!isClosed) {
-      setOpenDropdown(null)
+      setOpenDropdown(null);
     }
-  }
+  };
 
   const toggleDropdown = (dropdownName) => {
-    // Only allow dropdown toggle when sidebar is expanded
     if (!isClosed) {
-      setOpenDropdown(openDropdown === dropdownName ? null : dropdownName)
+      setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
     }
-  }
+  };
+
+  const handleLogout = () => {
+    // Remove token or clear session
+    localStorage.removeItem("token"); // Or use cookies if applicable
+    router.push("/login");
+  };
 
   return (
     <aside className={`sidebar ${isClosed ? "close" : ""}`}>
@@ -49,6 +53,7 @@ const Sidebar = () => {
               </Link>
             </li>
 
+            {/* Leads Dropdown */}
             <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/leads") ? "active" : ""}`}>
               <div
                 className="sidebar-link dropdown-trigger"
@@ -59,7 +64,6 @@ const Sidebar = () => {
                 <span className="nav-text">Leads Management</span>
                 <ChevronDown className={`icon dropdown-arrow ${openDropdown === "leads" ? "rotated" : ""}`} />
               </div>
-
               <ul className={`dropdown-list ${openDropdown === "leads" ? "open" : ""}`}>
                 <li className="nav-link">
                   <Link
@@ -95,6 +99,8 @@ const Sidebar = () => {
                 </li>
               </ul>
             </li>
+
+            {/* Application Dropdown */}
             <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/application") ? "active" : ""}`}>
               <div
                 className="sidebar-link dropdown-trigger"
@@ -141,6 +147,7 @@ const Sidebar = () => {
               </ul>
             </li>
 
+            {/* Countries Dropdown */}
             <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/countries") ? "active" : ""}`}>
               <div
                 className="sidebar-link dropdown-trigger"
@@ -175,7 +182,7 @@ const Sidebar = () => {
 
         <div className="bottom-content">
           <li className="nav-link">
-            <button onClick={logoutUser} className="sidebar-link" data-tooltip="Logout">
+            <button onClick={handleLogout} className="sidebar-link" data-tooltip="Logout">
               <LogOut className="icon" />
               <span className="nav-text">Logout</span>
             </button>
@@ -183,7 +190,7 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
