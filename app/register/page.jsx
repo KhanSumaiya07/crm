@@ -1,57 +1,74 @@
 "use client"
 
-import { useState } from "react"
-import { Mail, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react"
+import { useState } from "react";
+import { Mail, Eye, EyeOff, ArrowRight, User, Phone } from "lucide-react";
 import { AuthInput } from "../components/ui/AuthInput";
-import styles from "../page.module.css"
+import styles from "../page.module.css";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../../lib/firebase"; // adjust path if needed
-import { ToastContainer ,  toast } from "react-toastify";
+import { auth } from "../../lib/firebase"; // adjust if needed
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function RegisterForm() {
-    const router = useRouter(); // initialize router
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-     mobile: "",
+    mobile: "",
     email: "",
     password: "",
     confirmPassword: "",
-  })
+  });
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (formData.password !== formData.confirmPassword) {
-    toast.error("Passwords do not match");
-    return;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      formData.email,
-      formData.password
-    );
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
 
-    await updateProfile(userCredential.user, {
-      displayName: formData.name,
-    });
+    try {
+      // Step 1: Firebase Signup
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
 
-    toast.success("Registration successful!");
-    setTimeout(() => {
-      router.push("/login");
-    }, 1500);
-  } catch (error) {
-    toast.error("already registered");
-  }
-};
+      await updateProfile(userCredential.user, {
+        displayName: formData.name,
+      });
+
+      // Step 2: Call Backend API
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: "student", // default role
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Backend registration failed");
+
+      toast.success("Registration successful!");
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+    } catch (error) {
+      toast.error(error.message || "Registration failed");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        {/* Blue top border */}
         <div className={styles.topBorder}></div>
 
         <div className={styles.content}>
@@ -71,16 +88,17 @@ export default function RegisterForm() {
               placeholder="Enter your full name"
               required
             />
-<AuthInput
-  id="mobile"
-  label="Mobile Number"
-  type="tel"
-  value={formData.mobile}
-  onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-  icon={<Phone size={16} />}
-  placeholder="Enter your mobile number"
-  required
-/>
+
+            <AuthInput
+              id="mobile"
+              label="Mobile Number"
+              type="tel"
+              value={formData.mobile}
+              onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+              icon={<Phone size={16} />}
+              placeholder="Enter your mobile number"
+              required
+            />
 
             <AuthInput
               id="email"
@@ -107,7 +125,11 @@ export default function RegisterForm() {
                   placeholder="Enter the password"
                   required
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.toggleButton}>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={styles.toggleButton}
+                >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -153,16 +175,16 @@ export default function RegisterForm() {
           </div>
         </div>
       </div>
-      <ToastContainer
-  position="top-center"
-  autoClose={4000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  pauseOnHover
-  theme="colored"
-/>
 
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
     </div>
-  )
+  );
 }
