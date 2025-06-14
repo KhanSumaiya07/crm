@@ -136,12 +136,7 @@ export default function LoginForm() {
                             </p>
                         </div>
 
-                        {/* You can replace this with your own OAuth logic later */}
-                        <p className={styles.orText}>or</p>
-                        <button disabled className={styles.googleButton}>
-                            <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" alt="Google" className={styles.icon} />
-                            Continue with Google (Coming Soon)
-                        </button>
+                        
                     </div>
                 </div>
             </div>
