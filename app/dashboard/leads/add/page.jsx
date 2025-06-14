@@ -1,297 +1,197 @@
-"use client"
-
-import { useState } from "react"
-import { User, GraduationCap, Phone, MapPin } from "lucide-react"
-import InfoCard from "../../../components/dashboard/infoCard/infoCard"
-import InputField from "../../../components/ui/inputField"
-import DashboardHeader from "../../../components/ui/dashboardHeader"
-import StepProgress from "../../../components/ui/step-progress"
-import styles from "./style.module.css"
+'use client';
+import { useState, useEffect } from 'react';
+import {
+  User,
+  GraduationCap,
+  Phone,
+  MapPin
+} from 'lucide-react';
+import InfoCard from '../../../components/dashboard/infoCard/infoCard';
+import InputField from '../../../components/ui/inputField';
+import DashboardHeader from '../../../components/ui/dashboardHeader';
+import StepProgress from '../../../components/ui/step-progress';
+import styles from './style.module.css';
 
 const steps = [
-  { id: 1, title: "Personal Information", status: "complete" },
-  { id: 2, title: "Study Preferences", status: "current" },
-  { id: 3, title: "Follow-up Info", status: "pending" },
-]
+  { id: 1, title: 'Personal Information', status: 'complete' },
+  { id: 2, title: 'Study Preferences', status: 'current' },
+  { id: 3, title: 'Follow-up Info', status: 'pending' }
+];
 
-export default function AddLeadForm() {
-  const [currentStep, setCurrentStep] = useState(2)
+const AddLead = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [counsellors, setCounsellors] = useState([]);
+
   const [formData, setFormData] = useState({
-    // Personal Information
-    fullname: "",
-    DOB: "",
-    gender: "",
-    email: "",
-    phone: "",
-    countryofresidence: "",
-    highestQualification: "",
-    passoutYear: "",
-    academicScore: "",
+    fullname: '',
+    DOB: '',
+    gender: '',
+    email: '',
+    phone: '',
+    countryofresidence: '',
+    highestQualification: '',
+    passoutYear: '',
+    academicScore: '',
+    assignedCounsellor: '',
 
     // Study Preferences
-    preferredCountry: "",
-    preferredCourse: "",
-    intake: "",
-    qualification: "",
-    ieltsScore: "",
-    budget: "",
+    preferredCountry: '',
+    preferredCourse: '',
+    intake: '',
+    qualification: '',
+    ieltsScore: '',
+    budget: '',
 
     // Follow-up Info
-    followupDate: "",
-    notes: "",
-    priority: "",
-  })
+    followupDate: '',
+    notes: '',
+    priority: ''
+  });
+
+  useEffect(() => {
+    const fetchCounsellors = async () => {
+      const res = await fetch('/api/counsellor/list');
+      const data = await res.json();
+      setCounsellors(data);
+    };
+    fetchCounsellors();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
-    }))
-  }
+      [name]: value
+    }));
+  };
 
-  const handleStepClick = (stepId) => {
-    setCurrentStep(stepId)
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch('/api/leads/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1)
+    const result = await res.json();
+    if (res.ok) {
+      alert('Lead added successfully');
+      setFormData({});
+      setCurrentStep(1);
+    } else {
+      alert(result.error || 'Something went wrong');
     }
-  }
+  };
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const renderPersonalInformation = () => (
+  const renderStep1 = () => (
     <>
       <InfoCard title="Personal Information" icon={User}>
         <div className={styles.formGrid}>
-          <div className={styles.formField}>
-            <InputField
-              label="Full Name"
-              name="fullname"
-              placeholder="Enter full name"
-              value={formData.fullname}
-              onChange={handleChange}
-            />
-          </div>
-          <div className={styles.formField}>
-            <InputField label="Date of Birth" name="DOB" type="date" value={formData.DOB} onChange={handleChange} />
-          </div>
-          <div className={styles.formField}>
-            <InputField
-              label="Gender"
-              name="gender"
-              type="select"
-              value={formData.gender}
-              onChange={handleChange}
-              placeholder="Select gender"
-              options={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "other", label: "Other" },
-              ]}
-            />
-          </div>
+          <InputField label="Full Name" name="fullname" value={formData.fullname} onChange={handleChange} />
+          <InputField label="Date of Birth" name="DOB" type="date" value={formData.DOB} onChange={handleChange} />
+          <InputField
+            label="Gender"
+            name="gender"
+            type="select"
+            value={formData.gender}
+            onChange={handleChange}
+            options={[
+              { value: 'male', label: 'Male' },
+              { value: 'female', label: 'Female' },
+              { value: 'other', label: 'Other' }
+            ]}
+          />
         </div>
       </InfoCard>
 
       <InfoCard title="Contact Information" icon={MapPin}>
         <div className={styles.formGridTwo}>
-          <div className={styles.formField}>
-            <InputField
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email address"
-            />
-          </div>
-          <div className={styles.formField}>
-            <InputField
-              label="Phone Number"
-              name="phone"
-              type="text"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Enter phone number"
-            />
-          </div>
-          <div className={styles.formFieldFull}>
-            <InputField
-              label="Country of Residence"
-              name="countryofresidence"
-              type="text"
-              value={formData.countryofresidence}
-              onChange={handleChange}
-              placeholder="Enter country of residence"
-            />
-          </div>
+          <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
+          <InputField label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
+          <InputField label="Country of Residence" name="countryofresidence" value={formData.countryofresidence} onChange={handleChange} />
         </div>
       </InfoCard>
 
       <InfoCard title="Academic Information" icon={GraduationCap}>
         <div className={styles.formGridTwo}>
-          <div className={styles.formField}>
-            <InputField
-              label="Highest Qualification"
-              name="highestQualification"
-              type="select"
-              value={formData.highestQualification}
-              onChange={handleChange}
-              placeholder="Select qualification"
-              options={[
-                { value: "12th", label: "12th" },
-                { value: "Diploma", label: "Diploma" },
-                { value: "Bachelor", label: "Bachelor's Degree" },
-                { value: "Master", label: "Master's Degree" },
-                { value: "PhD", label: "Ph.D" },
-              ]}
-            />
-          </div>
-          <div className={styles.formField}>
-            <InputField
-              label="Pass-out Year"
-              name="passoutYear"
-              type="number"
-              value={formData.passoutYear}
-              onChange={handleChange}
-              placeholder="e.g. 2023"
-            />
-          </div>
-          <div className={styles.formField}>
-            <InputField
-              label="Percentage / CGPA"
-              name="academicScore"
-              type="text"
-              value={formData.academicScore}
-              onChange={handleChange}
-              placeholder="e.g. 82.5% or 8.2 CGPA"
-            />
-          </div>
-        </div>
-      </InfoCard>
-    </>
-  )
-
-  const renderStudyPreferences = () => (
-    <InfoCard title="Study Preferences" icon={GraduationCap}>
-      <div className={styles.formGrid}>
-        <div className={styles.formField}>
           <InputField
-            label="Preferred Country"
-            name="preferredCountry"
-            placeholder="Enter preferred country"
-            value={formData.preferredCountry}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="Preferred Course"
-            name="preferredCourse"
-            placeholder="Enter preferred course"
-            value={formData.preferredCourse}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="Intake"
-            name="intake"
-            placeholder="Enter intake period"
-            value={formData.intake}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="Qualification"
-            name="qualification"
-            placeholder="Enter qualification"
-            value={formData.qualification}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="IELTS/TOEFL Score"
-            name="ieltsScore"
-            placeholder="Enter test score"
-            value={formData.ieltsScore}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="Budget"
-            name="budget"
-            placeholder="Budget (in ₹ / USD)"
-            value={formData.budget}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-    </InfoCard>
-  )
-
-  const renderFollowUpInfo = () => (
-    <InfoCard title="Follow-up Information" icon={Phone}>
-      <div className={styles.formGridTwo}>
-        <div className={styles.formField}>
-          <InputField
-            label="Follow-up Date"
-            name="followupDate"
-            type="date"
-            value={formData.followupDate}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={styles.formField}>
-          <InputField
-            label="Priority"
-            name="priority"
+            label="Highest Qualification"
+            name="highestQualification"
             type="select"
-            placeholder="Select priority"
-            value={formData.priority}
+            value={formData.highestQualification}
             onChange={handleChange}
             options={[
-              { value: "high", label: "High" },
-              { value: "medium", label: "Medium" },
-              { value: "low", label: "Low" },
+              { value: '12th', label: '12th' },
+              { value: 'Diploma', label: 'Diploma' },
+              { value: 'Bachelor', label: "Bachelor's" },
+              { value: 'Master', label: 'Master' },
+              { value: 'PhD', label: 'Ph.D' }
             ]}
           />
+          <InputField label="Pass-out Year" name="passoutYear" type="number" value={formData.passoutYear} onChange={handleChange} />
+          <InputField label="Percentage / CGPA" name="academicScore" value={formData.academicScore} onChange={handleChange} />
         </div>
-        <div className={styles.formFieldFull}>
-          <InputField
-            label="Notes"
-            name="notes"
-            placeholder="Add any additional notes"
-            value={formData.notes}
-            onChange={handleChange}
-          />
-        </div>
+      </InfoCard>
+
+      <InfoCard title="Assign Counsellor" icon={User}>
+        <InputField
+          label="Assign to Counsellor"
+          name="assignedCounsellor"
+          type="select"
+          value={formData.assignedCounsellor}
+          onChange={handleChange}
+          options={counsellors.map((c) => ({ value: c._id, label: c.name }))}
+        />
+      </InfoCard>
+    </>
+  );
+
+  const renderStep2 = () => (
+    <InfoCard title="Study Preferences" icon={GraduationCap}>
+      <div className={styles.formGrid}>
+        <InputField label="Preferred Country" name="preferredCountry" value={formData.preferredCountry} onChange={handleChange} />
+        <InputField label="Preferred Course" name="preferredCourse" value={formData.preferredCourse} onChange={handleChange} />
+        <InputField label="Intake" name="intake" value={formData.intake} onChange={handleChange} />
+        <InputField label="Qualification" name="qualification" value={formData.qualification} onChange={handleChange} />
+        <InputField label="IELTS/TOEFL Score" name="ieltsScore" value={formData.ieltsScore} onChange={handleChange} />
+        <InputField label="Budget" name="budget" value={formData.budget} onChange={handleChange} />
       </div>
     </InfoCard>
-  )
+  );
+
+  const renderStep3 = () => (
+    <InfoCard title="Follow-up Information" icon={Phone}>
+      <div className={styles.formGridTwo}>
+        <InputField label="Follow-up Date" name="followupDate" type="date" value={formData.followupDate} onChange={handleChange} />
+        <InputField
+          label="Priority"
+          name="priority"
+          type="select"
+          value={formData.priority}
+          onChange={handleChange}
+          options={[
+            { value: 'high', label: 'High' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'low', label: 'Low' }
+          ]}
+        />
+        <InputField label="Notes" name="notes" value={formData.notes} onChange={handleChange} />
+      </div>
+    </InfoCard>
+  );
 
   const getCurrentStepContent = () => {
     switch (currentStep) {
       case 1:
-        return renderPersonalInformation()
+        return renderStep1();
       case 2:
-        return renderStudyPreferences()
+        return renderStep2();
       case 3:
-        return renderFollowUpInfo()
+        return renderStep3();
       default:
-        return renderPersonalInformation()
+        return null;
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -300,30 +200,33 @@ export default function AddLeadForm() {
       <StepProgress
         steps={steps.map((step) => ({
           ...step,
-          status: step.id < currentStep ? "complete" : step.id === currentStep ? "current" : "pending",
+          status: step.id < currentStep ? 'complete' : step.id === currentStep ? 'current' : 'pending'
         }))}
         currentStep={currentStep}
-        onStepClick={handleStepClick}
+        onStepClick={setCurrentStep}
       />
 
-      <div className={styles.content}>{getCurrentStepContent()}</div>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.content}>{getCurrentStepContent()}</div>
 
-      <div className={styles.navigation}>
-        <button
-          onClick={handleBack}
-          disabled={currentStep === 1}
-          className={`${styles.button} ${styles.buttonSecondary}`}
-        >
-          Back
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={currentStep === steps.length}
-          className={`${styles.button} ${styles.buttonPrimary}`}
-        >
-          Continue
-        </button>
-      </div>
+        <div className={styles.navigation}>
+          <button type="button" onClick={() => setCurrentStep(currentStep - 1)} disabled={currentStep === 1} className={styles.buttonSecondary}>
+            Back
+          </button>
+
+          {currentStep < steps.length ? (
+            <button type="button" onClick={() => setCurrentStep(currentStep + 1)} className={styles.buttonPrimary}>
+              Next
+            </button>
+          ) : (
+            <button type="submit" className={styles.buttonPrimary}>
+              Submit Lead
+            </button>
+          )}
+        </div>
+      </form>
     </div>
-  )
-}
+  );
+};
+
+export default AddLead;
