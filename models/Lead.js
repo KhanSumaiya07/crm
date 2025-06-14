@@ -72,7 +72,6 @@ const leadSchema = new mongoose.Schema({
   },
   score: {
     type: String,
-    default: 'None'
   },
   budget: {
     type: String
@@ -90,23 +89,15 @@ const leadSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: null
-  },
-  counsellorname: {
-    type: String
-  },
-  remarks: {
-    type: String
-  },
+ 
+  
   followUps: [followUpSchema], // 🆕 Added follow-up details here
   createdAt: {
     type: Date,
     default: Date.now
   },
   createdBy: {
+
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }
