@@ -23,32 +23,35 @@ const AddLead = () => {
 
 
   const [formData, setFormData] = useState({
-    fullname: '',
-    DOB: '',
-    gender: '',
-    email: '',
-    phone: '',
-    countryofresidence: '',
-    highestQualification: '',
-    passoutYear: '',
-    academicScore: '',
-   
+  fullname: '',
+  DOB: '',
+  gender: '',
+  email: '',
+  phone: '',
+  countryofresidence: '',
+  highestQualification: '',
+  passoutYear: '',
+  academicScore: '',
 
-    // Study Preferences
-    preferredCountry: '',
-    preferredCourse: '',
-    intake: '',
-    qualification: '',
-    ieltsScore: '',
-    budget: '',
+  // Study Preferences
+  preferredCountry: '',
+  preferredCourse: '',
+  intake: '',
+  ieltsScore: '',
+  budget: '',
 
-    // Follow-up Info
-    followupDate: '',
-    followupTime: '',
-    notes: '',
-    priority: '',
-    // followupMode,
-  });
+  // Follow-up Info
+  followUps: [
+    {
+      leadType: '',
+      date: '',
+      time: '',
+      mode: '',
+      status: 'New',
+      remark: ''
+    }
+  ]
+});
 
 
 
@@ -69,6 +72,7 @@ const AddLead = () => {
     });
 
     const result = await res.json();
+    console.log(result);
     if (res.ok) {
       alert('Lead added successfully');
       setFormData({});
@@ -77,6 +81,7 @@ const AddLead = () => {
       alert(result.error || 'Something went wrong');
     }
   };
+
 
   const renderStep1 = () => (
     <>
@@ -150,91 +155,76 @@ const AddLead = () => {
    <InfoCard title="Follow-up Information" icon={Phone}>
   <div className={styles.formGridTwo}>
 
-    {/* Follow-up Date */}
     <InputField
-      label="Follow-up Date"
-      name="followupDate"
-      type="date"
-      value={formData.followupDate}
-      onChange={handleChange}
-    />
+  label="Follow-up Date"
+  name="date"
+  type="date"
+  value={formData.followUps[0].date}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].date = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
+/>
 
-    {/* Follow-up Time */}
-    <InputField
-      label="Follow-up Time"
-      name="followupTime"
-      type="time"
-      value={formData.followupTime}
-      onChange={handleChange}
-    />
+<InputField
+  label="Follow-up Time"
+  name="time"
+  type="time"
+  value={formData.followUps[0].time}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].time = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
+/>
 
-    {/* Lead Type Dropdown */}
-    <InputField
-      label="Lead Type"
-      name="leadType"
-      type="select"
-      value={formData.leadType}
-      placeholder="Select Lead Type"
-      onChange={handleChange}
-      options={[
-        { value: '', label: 'Select Lead Type' },
-        { value: 'Cold', label: 'Cold' },
-        { value: 'Completed', label: 'Completed' },
-        { value: 'Failed', label: 'Failed' },
-        { value: 'Future Lead', label: 'Future Lead' },
-        { value: 'Hot', label: 'Hot' },
-        { value: 'Medium', label: 'Medium' },
-        { value: 'Not Responding', label: 'Not Responding' },
-      ]}
-    />
+<InputField
+  label="Lead Type"
+  name="leadType"
+  type="select"
+  value={formData.followUps[0].leadType}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].leadType = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
+/>
 
-    {/* Follow-up Mode Dropdown */}
-    {/* <InputField
-      label="Follow-up Mode"
-      name="followupMode"
-      type="select"
-      placeholder="Select Follow-up Mode"
-      value={formData.followupMode}
-      onChange={handleChange}
-      options={[
-        { value: '', label: 'Select Mode' },
-        { value: 'BBM', label: 'BBM' },
-        { value: 'Email', label: 'Email' },
-        { value: 'Google Meet', label: 'Google Meet' },
-        { value: 'Meeting', label: 'Meeting' },
-        { value: 'Phone', label: 'Phone' },
-        { value: 'Skype', label: 'Skype' },
-        { value: 'We Chat', label: 'We Chat' },
-        { value: 'Whatsapp', label: 'Whatsapp' },
-        { value: 'Zoom', label: 'Zoom' },
-      ]}
-    /> */}
+<InputField
+  label="Mode"
+  name="mode"
+  value={formData.followUps[0].mode}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].mode = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
+/>
 
-    {/* status dropdown  */}
-    <InputField
+<InputField
   label="Status"
   name="status"
   type="select"
-  value={formData.status}
-  onChange={handleChange}
-  options={[
-    { value: '', label: 'Select Status' },
-    { value: 'New', label: 'New' },
-    { value: 'In Progress', label: 'In Progress' },
-    { value: 'Follow-up Scheduled', label: 'Follow-up Scheduled' },
-    { value: 'Converted', label: 'Converted' },
-    { value: 'Not Interested', label: 'Not Interested' },
-    { value: 'Closed', label: 'Closed' }
-  ]}
+  value={formData.followUps[0].status}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].status = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
 />
 
-    {/* Notes or Remarks */}
-    <InputField
-      label="Remarks"
-      name="remarks"
-      value={formData.remarks}
-      onChange={handleChange}
-    />
+<InputField
+  label="Remarks"
+  name="remark"
+  value={formData.followUps[0].remark}
+  onChange={(e) => {
+    const newFollowUps = [...formData.followUps];
+    newFollowUps[0].remark = e.target.value;
+    setFormData({ ...formData, followUps: newFollowUps });
+  }}
+/>
+
   </div>
 </InfoCard>
 
