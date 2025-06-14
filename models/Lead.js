@@ -3,25 +3,29 @@ import mongoose from 'mongoose';
 const followUpSchema = new mongoose.Schema({
   leadType: {
     type: String,
-    enum: ['Hot', 'Warm', 'Cold'],
-    required: true,
+    
   },
   date: {
     type: Date,
-    required: true,
+    
   },
   time: {
     type: String, // Store as string (e.g., '14:30')
-    required: true,
+    
   },
   mode: {
     type: String,
-    enum: ['Call', 'Email', 'WhatsApp', 'In-Person'],
-    required: true,
+    
+    
+  },
+  status: {
+    type: String,
+    enum: ['New', 'In Process', 'Future Lead', 'Completed', 'Not responding', 'Failed'],
+    default: 'New'
   },
   remark: {
     type: String,
-    required: true,
+    
   }
 }, { _id: false });
 
@@ -54,7 +58,7 @@ const leadSchema = new mongoose.Schema({
   },
   preferencecountry: {
     type: String,
-    required: true
+    
   },
   prefferredcourse: {
     type: String
@@ -80,15 +84,8 @@ const leadSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  source: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    enum: ['New', 'In Process', 'Future Lead', 'Completed', 'Not responding', 'Failed'],
-    default: 'New'
-  },
+ 
+  
   leaddate: {
     type: Date,
     default: Date.now
