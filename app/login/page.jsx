@@ -11,24 +11,50 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function LoginForm() {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        Type: "",
-    });
+    const [formData, setformData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+   const [role, setRole] = useState('admin'); 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        // Placeholder for your own authentication logic
-        if (formData.email === "admin@example.com" && formData.password === "123456") {
-            toast.success("Login successful!");
-            router.push("/dashboard");
-        } else {
-            toast.error("Invalid email or password");
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setLoading(false);
+
+      if (res.ok) {
+        toast.success('Login successful!');
+
+        document.cookie = `token=${data.token}`;
+        localStorage.setItem('userId', data.userId);
+
+        switch (data.role) {
+          case 'admin':
+            router.push('/dashboard');
+            break;
+          case 'counsellor':
+            router.push('/dashboard');
+            break;
+          default:
+            toast.error('Unknown role. Contact admin.');
         }
-    };
-
+      } else {
+        toast.error(data.error || 'Login failed');
+      }
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      toast.error('Something went wrong. Try again later.');
+    }
+  };
     return (
         <div className={styles.mainWrappper}>
             <div className={styles.container}>
@@ -47,7 +73,7 @@ export default function LoginForm() {
                                 type="email"
                                 placeholder='Enter the Email'
                                 value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                onChange={(e) => setformData({ ...formData, email: e.target.value })}
                                 icon={<Mail size={16} />}
                                 required
                             />
@@ -66,7 +92,7 @@ export default function LoginForm() {
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        onChange={(e) => setformData({ ...formData, password: e.target.value })}
                                         className={styles.passwordInput}
                                         placeholder="Enter the password"
                                         required
@@ -83,8 +109,8 @@ export default function LoginForm() {
                                 </label>
                                 <select
                                     id="Type"
-                                    value={formData.Type}
-                                    onChange={(e) => setFormData({ ...formData, Type: e.target.value })}
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value )}
                                     className={styles.select}
                                     required
                                 >

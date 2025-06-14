@@ -1,5 +1,4 @@
 'use client'
-import DashboardHeader from '@/app/components/ui/dashboardHeader'
 import {
   User,
   MapPin,
@@ -8,9 +7,13 @@ import {
   FileText,
   Info,
 } from "lucide-react"
-import InfoCard from "../../../components/dashboard/infoCard/infoCard"
+// import InfoCard from "../../../components/ui/infoCard"
+import InfoCard from "../../../components/dashboard/infoCard/infoCard";
+
 import React, { useState } from "react"
-import InputField from '@/app/components/ui/inputField'
+import InputField from '../../../components/ui/inputField';
+import DashboardHeader from "../../../components/ui/dashboardHeader";
+
 
 const AddLead = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +39,7 @@ const AddLead = () => {
   return (
     <div>
       <DashboardHeader title='Add Lead' subtitle='Enter student info to create a new lead.' />
+  
       <div className="addLeadFormContainer">
 
         {/* Personal Info */}

@@ -1,0 +1,21 @@
+.dashboard-layout {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.dashboard-content-wrapper {
+  display: flex;
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-left: 70px;
+  padding-top: 80px;
+  transition: all 0.3s;
+  overflow: auto;
+  min-height: 100vh;
+}
+
+.dashboard-container {
+  padding: 24px;
+}
