@@ -1,5 +1,5 @@
 import React from 'react'
-import DashboardHeader from '@/app/components/ui/dashboardHeader'
+import DashboardHeader from '../../../components/ui/dashboardHeader'
 
 const ViewLeads = () => {
   return (
