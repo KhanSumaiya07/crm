@@ -20,7 +20,7 @@ const steps = [
 
 const AddLead = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [counsellors, setCounsellors] = useState([]);
+
 
   const [formData, setFormData] = useState({
     fullname: '',
@@ -44,18 +44,13 @@ const AddLead = () => {
 
     // Follow-up Info
     followupDate: '',
+    followupTime: '',
     notes: '',
-    priority: ''
+    priority: '',
+    // followupMode,
   });
 
-  useEffect(() => {
-    const fetchCounsellors = async () => {
-      const res = await fetch('/api/counsellor/list');
-      const data = await res.json();
-      setCounsellors(data);
-    };
-    fetchCounsellors();
-  }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,11 +82,12 @@ const AddLead = () => {
     <>
       <InfoCard title="Personal Information" icon={User}>
         <div className={styles.formGrid}>
-          <InputField label="Full Name" name="fullname" value={formData.fullname} onChange={handleChange} />
+          <InputField label="Full Name" placeholder="Enter full name" name="fullname" value={formData.fullname} onChange={handleChange} />
           <InputField label="Date of Birth" name="DOB" type="date" value={formData.DOB} onChange={handleChange} />
           <InputField
             label="Gender"
             name="gender"
+             placeholder="Select gender"
             type="select"
             value={formData.gender}
             onChange={handleChange}
@@ -105,20 +101,21 @@ const AddLead = () => {
       </InfoCard>
 
       <InfoCard title="Contact Information" icon={MapPin}>
-        <div className={styles.formGridTwo}>
-          <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
-          <InputField label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
-          <InputField label="Country of Residence" name="countryofresidence" value={formData.countryofresidence} onChange={handleChange} />
+        <div className={styles.formGrid}>
+          <InputField label="Email" name="email" placeholder="Enter email address" type="email" value={formData.email} onChange={handleChange} />
+          <InputField label="Phone Number" name="phone" placeholder="Enter phone number" value={formData.phone} onChange={handleChange} />
+          <InputField label="Country of Residence" name="countryofresidence" placeholder="Enter country of residence" value={formData.countryofresidence} onChange={handleChange} />
         </div>
       </InfoCard>
 
       <InfoCard title="Academic Information" icon={GraduationCap}>
-        <div className={styles.formGridTwo}>
+        <div className={styles.formGrid}>
           <InputField
             label="Highest Qualification"
             name="highestQualification"
             type="select"
             value={formData.highestQualification}
+            placeholder="Select qualification"
             onChange={handleChange}
             options={[
               { value: '12th', label: '12th' },
@@ -128,8 +125,8 @@ const AddLead = () => {
               { value: 'PhD', label: 'Ph.D' }
             ]}
           />
-          <InputField label="Pass-out Year" name="passoutYear" type="number" value={formData.passoutYear} onChange={handleChange} />
-          <InputField label="Percentage / CGPA" name="academicScore" value={formData.academicScore} onChange={handleChange} />
+          <InputField label="Pass-out Year" name="passoutYear" placeholder="e.g. 2023" type="number" value={formData.passoutYear} onChange={handleChange} />
+          <InputField label="Percentage / CGPA" name="academicScore" placeholder="e.g. 82.5% or 8.2 CGPA" value={formData.academicScore} onChange={handleChange} />
         </div>
       </InfoCard>
 
@@ -139,35 +136,108 @@ const AddLead = () => {
   const renderStep2 = () => (
     <InfoCard title="Study Preferences" icon={GraduationCap}>
       <div className={styles.formGrid}>
-        <InputField label="Preferred Country" name="preferredCountry" value={formData.preferredCountry} onChange={handleChange} />
-        <InputField label="Preferred Course" name="preferredCourse" value={formData.preferredCourse} onChange={handleChange} />
-        <InputField label="Intake" name="intake" value={formData.intake} onChange={handleChange} />
-        <InputField label="Qualification" name="qualification" value={formData.qualification} onChange={handleChange} />
-        <InputField label="IELTS/TOEFL Score" name="ieltsScore" value={formData.ieltsScore} onChange={handleChange} />
-        <InputField label="Budget" name="budget" value={formData.budget} onChange={handleChange} />
+        <InputField label="Preferred Country" placeholder="Enter preferred country" name="preferredCountry" value={formData.preferredCountry} onChange={handleChange} />
+        <InputField label="Preferred Course" placeholder="Enter preferred course" name="preferredCourse" value={formData.preferredCourse} onChange={handleChange} />
+        <InputField label="Intake" name="intake" placeholder="Enter intake period" value={formData.intake} onChange={handleChange} />
+        
+        <InputField label="IELTS/TOEFL Score" name="ieltsScore" placeholder="Enter test score" value={formData.ieltsScore} onChange={handleChange} />
+        <InputField label="Budget" name="budget" placeholder="Budget (in ₹ / USD)" value={formData.budget} onChange={handleChange} />
       </div>
     </InfoCard>
   );
 
   const renderStep3 = () => (
-    <InfoCard title="Follow-up Information" icon={Phone}>
-      <div className={styles.formGridTwo}>
-        <InputField label="Follow-up Date" name="followupDate" type="date" value={formData.followupDate} onChange={handleChange} />
-        <InputField
-          label="Priority"
-          name="priority"
-          type="select"
-          value={formData.priority}
-          onChange={handleChange}
-          options={[
-            { value: 'high', label: 'High' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'low', label: 'Low' }
-          ]}
-        />
-        <InputField label="Notes" name="notes" value={formData.notes} onChange={handleChange} />
-      </div>
-    </InfoCard>
+   <InfoCard title="Follow-up Information" icon={Phone}>
+  <div className={styles.formGridTwo}>
+
+    {/* Follow-up Date */}
+    <InputField
+      label="Follow-up Date"
+      name="followupDate"
+      type="date"
+      value={formData.followupDate}
+      onChange={handleChange}
+    />
+
+    {/* Follow-up Time */}
+    <InputField
+      label="Follow-up Time"
+      name="followupTime"
+      type="time"
+      value={formData.followupTime}
+      onChange={handleChange}
+    />
+
+    {/* Lead Type Dropdown */}
+    <InputField
+      label="Lead Type"
+      name="leadType"
+      type="select"
+      value={formData.leadType}
+      placeholder="Select Lead Type"
+      onChange={handleChange}
+      options={[
+        { value: '', label: 'Select Lead Type' },
+        { value: 'Cold', label: 'Cold' },
+        { value: 'Completed', label: 'Completed' },
+        { value: 'Failed', label: 'Failed' },
+        { value: 'Future Lead', label: 'Future Lead' },
+        { value: 'Hot', label: 'Hot' },
+        { value: 'Medium', label: 'Medium' },
+        { value: 'Not Responding', label: 'Not Responding' },
+      ]}
+    />
+
+    {/* Follow-up Mode Dropdown */}
+    {/* <InputField
+      label="Follow-up Mode"
+      name="followupMode"
+      type="select"
+      placeholder="Select Follow-up Mode"
+      value={formData.followupMode}
+      onChange={handleChange}
+      options={[
+        { value: '', label: 'Select Mode' },
+        { value: 'BBM', label: 'BBM' },
+        { value: 'Email', label: 'Email' },
+        { value: 'Google Meet', label: 'Google Meet' },
+        { value: 'Meeting', label: 'Meeting' },
+        { value: 'Phone', label: 'Phone' },
+        { value: 'Skype', label: 'Skype' },
+        { value: 'We Chat', label: 'We Chat' },
+        { value: 'Whatsapp', label: 'Whatsapp' },
+        { value: 'Zoom', label: 'Zoom' },
+      ]}
+    /> */}
+
+    {/* status dropdown  */}
+    <InputField
+  label="Status"
+  name="status"
+  type="select"
+  value={formData.status}
+  onChange={handleChange}
+  options={[
+    { value: '', label: 'Select Status' },
+    { value: 'New', label: 'New' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Follow-up Scheduled', label: 'Follow-up Scheduled' },
+    { value: 'Converted', label: 'Converted' },
+    { value: 'Not Interested', label: 'Not Interested' },
+    { value: 'Closed', label: 'Closed' }
+  ]}
+/>
+
+    {/* Notes or Remarks */}
+    <InputField
+      label="Remarks"
+      name="remarks"
+      value={formData.remarks}
+      onChange={handleChange}
+    />
+  </div>
+</InfoCard>
+
   );
 
   const getCurrentStepContent = () => {
