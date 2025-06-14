@@ -71,7 +71,7 @@ const leadSchema = new mongoose.Schema({
     type: String
   },
   score: {
-    type: Number,
+    type: String,
     default: 'None'
   },
   budget: {
