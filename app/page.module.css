@@ -221,6 +221,10 @@
     color: #3333;
 }
 
+.dashboardHeader{
+  margin-bottom: 24px;
+}
+
 .dashboardTitle{
     color: #3b3b3b;
     margin: 0;
