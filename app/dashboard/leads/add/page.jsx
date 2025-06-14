@@ -32,7 +32,7 @@ const AddLead = () => {
     highestQualification: '',
     passoutYear: '',
     academicScore: '',
-    assignedCounsellor: '',
+   
 
     // Study Preferences
     preferredCountry: '',
@@ -96,9 +96,9 @@ const AddLead = () => {
             value={formData.gender}
             onChange={handleChange}
             options={[
-              { value: 'male', label: 'Male' },
-              { value: 'female', label: 'Female' },
-              { value: 'other', label: 'Other' }
+              { value: 'Male', label: 'Male' },
+              { value: 'Female', label: 'Female' },
+              { value: 'Other', label: 'Other' }
             ]}
           />
         </div>
@@ -133,16 +133,6 @@ const AddLead = () => {
         </div>
       </InfoCard>
 
-      <InfoCard title="Assign Counsellor" icon={User}>
-        <InputField
-          label="Assign to Counsellor"
-          name="assignedCounsellor"
-          type="select"
-          value={formData.assignedCounsellor}
-          onChange={handleChange}
-          options={counsellors.map((c) => ({ value: c._id, label: c.name }))}
-        />
-      </InfoCard>
     </>
   );
 
