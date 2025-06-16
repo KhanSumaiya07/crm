@@ -106,6 +106,12 @@ const Sidebar = () => {
                   >
                     <span>View Lead Source</span>
                   </Link>
+                  <Link
+                    href="/dashboard/leads/Messages"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/Messages" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>Email messages</span>
+                  </Link>
                 </li>
               </ul>
             </li>
