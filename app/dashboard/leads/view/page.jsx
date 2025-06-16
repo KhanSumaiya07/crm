@@ -28,24 +28,24 @@ export default function ViewLeads() {
     fetchLeads();
   }, []);
 
-  const getStatusClass = (status) => {
-    switch (status.toLowerCase()) {
-      case "new lead":
-        return styles.statusNew;
-      case "in progress":
-        return styles.statusProgress;
-      case "document review":
-        return styles.statusReview;
-      case "application submitted":
-        return styles.statusSubmitted;
-      case "follow-up required":
-        return styles.statusFollowup;
-      case "completed":
-        return styles.statusCompleted;
-      default:
-        return styles.statusDefault;
-    }
-  };
+  // const getStatusClass = (status) => {
+  //   switch (status.toLowerCase()) {
+  //     case "new lead":
+  //       return styles.statusNew;
+  //     case "in progress":
+  //       return styles.statusProgress;
+  //     case "document review":
+  //       return styles.statusReview;
+  //     case "application submitted":
+  //       return styles.statusSubmitted;
+  //     case "follow-up required":
+  //       return styles.statusFollowup;
+  //     case "completed":
+  //       return styles.statusCompleted;
+  //     default:
+  //       return styles.statusDefault;
+  //   }
+  // };
 
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
@@ -53,11 +53,11 @@ export default function ViewLeads() {
       lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.interestedCountry?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "all" || lead.status?.toLowerCase() === statusFilter.toLowerCase();
+  //   const matchesStatus =
+  //     statusFilter === "all" || lead.status?.toLowerCase() === statusFilter.toLowerCase();
 
-    return matchesSearch && matchesStatus;
-  });
+  //   return matchesSearch && matchesStatus;
+   });
 
   if (loading) return <p>Loading...</p>;
 
