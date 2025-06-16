@@ -28,36 +28,35 @@ export default function ViewLeads() {
     fetchLeads();
   }, []);
 
-  // const getStatusClass = (status) => {
-  //   switch (status.toLowerCase()) {
-  //     case "new lead":
-  //       return styles.statusNew;
-  //     case "in progress":
-  //       return styles.statusProgress;
-  //     case "document review":
-  //       return styles.statusReview;
-  //     case "application submitted":
-  //       return styles.statusSubmitted;
-  //     case "follow-up required":
-  //       return styles.statusFollowup;
-  //     case "completed":
-  //       return styles.statusCompleted;
-  //     default:
-  //       return styles.statusDefault;
-  //   }
-  // };
-
+  const getStatusClass = (status) => {
+    switch (status?.toLowerCase()) {
+      case "new":
+        return styles.statusNew;
+      case "in progress":
+        return styles.statusProgress;
+      case "document review":
+        return styles.statusReview;
+      case "application submitted":
+        return styles.statusSubmitted;
+      case "follow-up required":
+        return styles.statusFollowup;
+      case "completed":
+        return styles.statusCompleted;
+      default:
+        return styles.statusDefault;
+    }
+  };
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch =
-      lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.interestedCountry?.toLowerCase().includes(searchTerm.toLowerCase());
+      lead.countryofresidence?.toLowerCase().includes(searchTerm.toLowerCase());
 
-  //   const matchesStatus =
-  //     statusFilter === "all" || lead.status?.toLowerCase() === statusFilter.toLowerCase();
+    const matchesStatus =
+      statusFilter === "all" || lead.followUps[0]?.status?.toLowerCase() === statusFilter.toLowerCase();
 
-  //   return matchesSearch && matchesStatus;
-   });
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) return <p>Loading...</p>;
 
@@ -122,13 +121,13 @@ export default function ViewLeads() {
               <tr key={lead._id || index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
                 <td className={styles.td}>
                   <div className={styles.nameCell}>
-                    <span className={styles.name}>{lead.name}</span>
+                    <span className={styles.name}>{lead.fullname}</span>
                   </div>
                 </td>
                 <td className={styles.td}>
                   <div className={styles.contactCell}>
                     <Phone className={styles.contactIcon} />
-                    <span>{lead.mobile}</span>
+                    <span>{lead.phone}</span>
                   </div>
                 </td>
                 <td className={styles.td}>
@@ -138,10 +137,12 @@ export default function ViewLeads() {
                   </div>
                 </td>
                 <td className={styles.td}>
-                  <span className={styles.country}>{lead.interestedCountry}</span>
+                  <span className={styles.country}>{lead.countryofresidence}</span>
                 </td>
                 <td className={styles.td}>
-                  <span className={`${styles.statusBadge} ${getStatusClass(lead.status)}`}>{lead.status}</span>
+                  <span className={`${styles.statusBadge} ${getStatusClass(lead.followUps[0]?.status)}`}>
+                    {lead.followUps[0]?.status || "N/A"}
+                  </span>
                 </td>
                 <td className={styles.td}>
                   {lead.isAssigned ? (
@@ -154,10 +155,16 @@ export default function ViewLeads() {
                   )}
                 </td>
                 <td className={styles.td}>
-                  <span className={styles.date}>{lead.addLeadDate}</span>
+                  <span className={styles.date}>
+                    {new Date(lead.leaddate).toLocaleDateString()}
+                  </span>
                 </td>
                 <td className={styles.td}>
-                  <span className={styles.date}>{lead.assignLeadDate || "-"}</span>
+                  <span className={styles.date}>
+                    {lead.followUps[0]?.date
+                      ? new Date(lead.followUps[0].date).toLocaleDateString()
+                      : "-"}
+                  </span>
                 </td>
                 <td className={styles.td}>
                   <div className={styles.actions}>
@@ -169,6 +176,7 @@ export default function ViewLeads() {
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
 
