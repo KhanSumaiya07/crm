@@ -1,5 +1,5 @@
-import { connectDB } from ".././../../../lib/db";
-import Application from "../../../../models/Applications";
+import { connectDB } from "../../../../lib/db";
+import Application from "../../../../models/Application";
 import Lead from "../../../../models/Lead";
 
 export async function GET(req, { params }) {
