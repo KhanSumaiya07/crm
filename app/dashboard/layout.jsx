@@ -1,19 +1,22 @@
-// app/dashboard/layout.jsx
-import Navbar from '../components/layout/navbar/navbar';
-import Sidebar from '../components/layout/sidebar/sidebar';
+
+import Navbar from "../components/layout/navbar/navbar"
+import Sidebar from "../components/layout/sidebar/sidebar"
+import "./layout.css"
 
 export const metadata = {
-  title: 'Dashboard',
-};
+  title: "Dashboard",
+}
 
 export default function DashboardLayout({ children }) {
   return (
-    <div>
-      <Navbar />
-      <div style={{ display: 'flex' }}>
-        <Sidebar />
-        <main style={{ flexGrow: 1, padding: '1rem', paddingTop:'6rem' }}>{children}</main>
+    <div className="dashboard-layout">
+      <Navbar/>
+      <div className="dashboard-content-wrapper">
+       <Sidebar/>
+        <main className="dashboard-main">
+          <div className="dashboard-container">{children}</div>
+        </main>
       </div>
     </div>
-  );
+  )
 }

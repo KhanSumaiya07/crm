@@ -1,17 +1,18 @@
 "use client"
+
 import {
-  HomeIcon as House,
-  UserRoundIcon as UserRoundPen,
-  ChevronDown,
-  FileIcon as FileUser,
-  LogOut,
-  MapPinIcon as MapPinCheck,
-  ChevronRight,
+  HomeIcon,
+  UserRoundIcon,
+  FileIcon,
+  MapPinIcon,
+  LogOutIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
 } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import "./style.css"
+import "./sidebar.css"
 
 const Sidebar = () => {
   const [isClosed, setIsClosed] = useState(true) // Start collapsed
@@ -34,137 +35,170 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className={`sidebar ${isClosed ? "close" : ""}`}>
-      <div className="toggle" onClick={handleToggle}>
-        <ChevronRight />
+    <aside className={`sidebar ${isClosed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
+      <div className="sidebar-toggle" onClick={handleToggle}>
+        <ChevronRightIcon className={`sidebar-toggle-icon ${!isClosed ? "sidebar-toggle-icon-rotated" : ""}`} />
       </div>
-      <div className="menu-bar">
-        <div className="menu">
-          <ul className="menu-links">
-            <li className="nav-link">
-              <Link href="/dashboard" className={`sidebar-link ${pathname === "/dashboard" ? "active" : ""}`} data-tooltip="Dashboard">
-                <House className="icon" />
-                <span className="nav-text">Dashboard</span>
+
+      <div className="sidebar-container">
+        <div className="sidebar-menu">
+          <ul className="sidebar-menu-links">
+            <li>
+              <Link
+                href="/dashboard"
+                className={`sidebar-link ${pathname === "/dashboard" ? "sidebar-link-active" : ""}`}
+                data-tooltip="Dashboard"
+              >
+                <HomeIcon className="sidebar-link-icon" />
+                <span className={`sidebar-link-text ${isClosed ? "sidebar-link-text-hidden" : ""}`}>Dashboard</span>
+                {isClosed && <span className="sidebar-tooltip">Dashboard</span>}
               </Link>
             </li>
 
-            <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/leads") ? "active" : ""}`}>
+            {/* Leads Management Dropdown */}
+            <li>
               <div
-                className="sidebar-link dropdown-trigger"
+                className={`sidebar-dropdown ${pathname.startsWith("/dashboard/leads") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("leads")}
                 data-tooltip="Leads Management"
               >
-                <UserRoundPen className="icon" />
-                <span className="nav-text">Leads Management</span>
-                <ChevronDown className={`icon dropdown-arrow ${openDropdown === "leads" ? "rotated" : ""}`} />
+                <UserRoundIcon className="sidebar-dropdown-icon" />
+                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
+                  Leads Management
+                </span>
+                <ChevronDownIcon
+                  className={`sidebar-dropdown-arrow ${openDropdown === "leads" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                />
+                {isClosed && <span className="sidebar-tooltip">Leads Management</span>}
               </div>
 
-              <ul className={`dropdown-list ${openDropdown === "leads" ? "open" : ""}`}>
-                <li className="nav-link">
+              <ul
+                className={`sidebar-submenu ${openDropdown === "leads" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
+              >
+                <li>
                   <Link
                     href="/dashboard/leads/add"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/leads/add" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/add" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">Add</span>
+                    <span>Add</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/leads/view"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/leads/view" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/view" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">View</span>
+                    <span>View</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/leads/followup"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/leads/followup" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/followup" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">Manage Follow-ups</span>
+                    <span>Manage Follow-ups</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/leads/source"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/leads/source" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/source" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">View Lead Source</span>
+                    <span>View Lead Source</span>
                   </Link>
                 </li>
               </ul>
             </li>
-            <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/application") ? "active" : ""}`}>
+
+            {/* Application Dropdown */}
+            <li>
               <div
-                className="sidebar-link dropdown-trigger"
+                className={`sidebar-dropdown ${pathname.startsWith("/dashboard/application") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("application")}
                 data-tooltip="Application"
               >
-                <FileUser className="icon" />
-                <span className="nav-text">Application</span>
-                <ChevronDown className={`icon dropdown-arrow ${openDropdown === "application" ? "rotated" : ""}`} />
+                <FileIcon className="sidebar-dropdown-icon" />
+                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
+                  Application
+                </span>
+                <ChevronDownIcon
+                  className={`sidebar-dropdown-arrow ${openDropdown === "application" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                />
+                {isClosed && <span className="sidebar-tooltip">Application</span>}
               </div>
-              <ul className={`dropdown-list ${openDropdown === "application" ? "open" : ""}`}>
-                <li className="nav-link">
+
+              <ul
+                className={`sidebar-submenu ${openDropdown === "application" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
+              >
+                <li>
                   <Link
                     href="/dashboard/application/generate"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/application/generate" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/generate" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">Generate Application</span>
+                    <span>Generate Application</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/application/view"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/application/view" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/view" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">View Application</span>
+                    <span>View Application</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/application/followup"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/application/followup" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/followup" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">Manage Application Followup</span>
+                    <span>Manage Application Followup</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/application/tracking"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/application/tracking" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/tracking" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">Application Tracking History</span>
+                    <span>Application Tracking History</span>
                   </Link>
                 </li>
               </ul>
             </li>
 
-            <li className={`nav-link has-dropdown ${pathname.startsWith("/dashboard/countries") ? "active" : ""}`}>
+            {/* Countries Dropdown */}
+            <li>
               <div
-                className="sidebar-link dropdown-trigger"
+                className={`sidebar-dropdown ${pathname.startsWith("/dashboard/countries") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("countries")}
                 data-tooltip="Countries"
               >
-                <MapPinCheck className="icon" />
-                <span className="nav-text">Countries</span>
-                <ChevronDown className={`icon dropdown-arrow ${openDropdown === "countries" ? "rotated" : ""}`} />
+                <MapPinIcon className="sidebar-dropdown-icon" />
+                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
+                  Countries
+                </span>
+                <ChevronDownIcon
+                  className={`sidebar-dropdown-arrow ${openDropdown === "countries" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                />
+                {isClosed && <span className="sidebar-tooltip">Countries</span>}
               </div>
-              <ul className={`dropdown-list ${openDropdown === "countries" ? "open" : ""}`}>
-                <li className="nav-link">
+
+              <ul
+                className={`sidebar-submenu ${openDropdown === "countries" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
+              >
+                <li>
                   <Link
                     href="/dashboard/countries/view"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/countries/view" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/countries/view" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">View</span>
+                    <span>View</span>
                   </Link>
                 </li>
-                <li className="nav-link">
+                <li>
                   <Link
                     href="/dashboard/countries/all"
-                    className={`dropdown-item sidebar-link ${pathname === "/dashboard/countries/all" ? "active" : ""}`}
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/countries/all" ? "sidebar-submenu-item-active" : ""}`}
                   >
-                    <span className="nav-text">All Countries</span>
+                    <span>All Countries</span>
                   </Link>
                 </li>
               </ul>
@@ -172,13 +206,20 @@ const Sidebar = () => {
           </ul>
         </div>
 
-        <div className="bottom-content">
-          <li className="nav-link">
-            <Link href="#" className="sidebar-link" data-tooltip="Logout">
-              <LogOut className="icon" />
-              <span className="nav-text">Logout</span>
-            </Link>
-          </li>
+        <div className="sidebar-footer">
+          <ul className="sidebar-footer-list">
+            <li>
+              <button
+                onClick={() => console.log("Logout clicked")}
+                className="sidebar-logout-button"
+                data-tooltip="Logout"
+              >
+                <LogOutIcon className="sidebar-logout-icon" />
+                <span className={`sidebar-logout-text ${isClosed ? "sidebar-logout-text-hidden" : ""}`}>Logout</span>
+                {isClosed && <span className="sidebar-tooltip">Logout</span>}
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </aside>

@@ -1,55 +1,65 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Mail, Eye, EyeOff, ArrowRight } from "lucide-react"
+import { useState } from "react";
+import { Mail, Eye, EyeOff, ArrowRight } from "lucide-react";
 import styles from "../page.module.css";
 import { useRouter } from "next/navigation";
 import { AuthInput } from "../components/ui/AuthInput";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../lib/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginForm() {
-    const router = useRouter(); // initialize router
-    const [showPassword, setShowPassword] = useState(false)
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        Type: "",
-    })
+    const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
+    const [formData, setformData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+   const [role, setRole] = useState('admin'); 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        try {
-            await signInWithEmailAndPassword(auth, formData.email, formData.password);
-            toast.success("Login successful!");
-            router.push("/dashboard");
-        } catch (error) {
-            toast.error("Invalid id password");
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      console.log(data);
+      setLoading(false);
+
+      if (res.ok) {
+        toast.success('Login successful!');
+
+        document.cookie = `token=${data.token}`;
+        localStorage.setItem('userId', data.userId);
+
+        switch (data.role) {
+          case 'admin':
+            router.push('/dashboard');
+            break;
+          case 'counsellor':
+            router.push('/dashboard');
+            break;
+          default:
+            toast.error('Unknown role. Contact admin.');
         }
-    };
-
-    const handleGoogleLogin = async () => {
-        try {
-            const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
-            toast.success("Google login successful!");
-            router.push("/dashboard");
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
-
+      } else {
+        toast.error(data.error || 'Login failed');
+      }
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      toast.error('Something went wrong. Try again later.');
+    }
+  };
     return (
         <div className={styles.mainWrappper}>
             <div className={styles.container}>
                 <div className={styles.card}>
-                    {/* Blue top border */}
                     <div className={styles.topBorder}></div>
-
                     <div className={styles.content}>
                         <div className={styles.header}>
                             <h1 className={styles.title}>Login</h1>
@@ -57,14 +67,13 @@ export default function LoginForm() {
                         </div>
 
                         <form onSubmit={handleSubmit} className={styles.form}>
-
                             <AuthInput
                                 id="email"
                                 label="Email Address"
                                 type="email"
                                 placeholder='Enter the Email'
                                 value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                onChange={(e) => setformData({ ...formData, email: e.target.value })}
                                 icon={<Mail size={16} />}
                                 required
                             />
@@ -83,7 +92,7 @@ export default function LoginForm() {
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        onChange={(e) => setformData({ ...formData, password: e.target.value })}
                                         className={styles.passwordInput}
                                         placeholder="Enter the password"
                                         required
@@ -93,14 +102,15 @@ export default function LoginForm() {
                                     </button>
                                 </div>
                             </div>
+
                             <div className={styles.inputGroup}>
                                 <label htmlFor="Type" className={styles.label}>
                                     Select Type<span className={styles.required}>*</span>
                                 </label>
                                 <select
                                     id="Type"
-                                    value={formData.Type}
-                                    onChange={(e) => setFormData({ ...formData, Type: e.target.value })}
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value )}
                                     className={styles.select}
                                     required
                                 >
@@ -126,18 +136,11 @@ export default function LoginForm() {
                             </p>
                         </div>
 
-                        <p className={styles.orText}>or</p>
-                        <button onClick={handleGoogleLogin} className={styles.googleButton}>
-                            <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" alt="Google" className={styles.icon} />
-                            Continue with Google
-                        </button>
-
-
-
+                        
                     </div>
                 </div>
             </div>
             <ToastContainer position="top-center" />
         </div>
-    )
+    );
 }
