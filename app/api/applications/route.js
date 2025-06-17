@@ -1,5 +1,5 @@
 import { connectDB } from "../../../lib/db";
-import Application from "../../../models/Applications";
+import Application from "../../../models/Application";
 import Lead from "../../../models/Lead";
 import { v4 as uuidv4 } from 'uuid';
 
