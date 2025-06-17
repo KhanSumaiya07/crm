@@ -1,80 +1,40 @@
 
-
-.toolbar {
+.loading {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-}
-
-.searchSection {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.searchBox {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.searchIcon {
-  position: absolute;
-  left: 0.75rem;
-  height: 1rem;
-  width: 1rem;
+  height: 200px;
+  font-size: 1.125rem;
   color: #6b7280;
 }
 
-.searchInput {
-  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  width: 300px;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-
-.searchInput:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.filterBox {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.filterIcon {
-  position: absolute;
-  left: 0.75rem;
-  height: 1rem;
-  width: 1rem;
-  color: #6b7280;
-  z-index: 1;
-}
-
-.filterSelect {
-  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+.searchContainer {
   background-color: white;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
 }
 
-.addButton {
+.filtersRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.searchRow {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.searchRow > div:first-child {
+  flex: 1;
+}
+
+.searchButton {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -86,13 +46,97 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  white-space: nowrap;
 }
 
-.addButton:hover {
+.searchButton:hover {
   background-color: #1d4ed8;
 }
 
-.addIcon {
+.searchIcon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.filterTag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.removeFilter {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.removeFilter:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.removeIcon {
+  height: 0.875rem;
+  width: 0.875rem;
+}
+
+.clearAll {
+  padding: 0.5rem 0.75rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.clearAll:hover {
+  background-color: #dc2626;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.downloadButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #059669;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.downloadButton:hover {
+  background-color: #047857;
+}
+
+.downloadIcon {
   height: 1rem;
   width: 1rem;
 }
@@ -179,6 +223,11 @@
   color: #111827;
 }
 
+.mode {
+  font-weight: 400;
+  color: #374151;
+}
+
 .statusBadge {
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -223,37 +272,15 @@
   color: #374151;
 }
 
-.assignmentCell {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.assignedTo {
-  color: #2563eb;
-  font-weight: 500;
-}
-
-.dropdownIcon {
-  height: 1rem;
-  width: 1rem;
-  color: #6b7280;
-}
-
-.notAssigned {
-  color: #ef4444;
-  font-weight: 500;
-}
-
 .date {
   color: #6b7280;
   font-weight: 400;
 }
 
-.actions {
+.actionButtons {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .actionButton {
@@ -263,16 +290,35 @@
   cursor: pointer;
   border-radius: 0.25rem;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .actionButton:hover {
   background-color: #f3f4f6;
 }
 
+.actionButton:first-child:hover {
+  background-color: #dbeafe;
+}
+
+.actionButton:last-child:hover {
+  background-color: #fef3c7;
+}
+
 .actionIcon {
   height: 1rem;
   width: 1rem;
   color: #6b7280;
+}
+
+.actionButton:first-child .actionIcon {
+  color: #2563eb;
+}
+
+.actionButton:last-child .actionIcon {
+  color: #d97706;
 }
 
 .tableFooter {
@@ -315,18 +361,33 @@
   font-size: 0.875rem;
 }
 
+.applicationBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.generated {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.notGenerated {
+  background-color: #fecaca;
+  color: #dc2626;
+}
+
 @media (max-width: 1024px) {
-  .toolbar {
+  .filtersRow {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .searchRow {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .searchSection {
-    flex-direction: column;
-  }
-
-  .searchInput {
-    width: 100%;
   }
 
   .tableContainer {
@@ -350,6 +411,10 @@
   }
 
   .pagination {
+    justify-content: center;
+  }
+
+  .actions {
     justify-content: center;
   }
 }

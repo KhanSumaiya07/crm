@@ -5,16 +5,31 @@
   height: 100vh;
   background-color: white;
   border-right: 1px solid #e5e7eb;
-  transition: all 0.3s;
-  z-index: 40;
+  transition: all 0.3s ease;
+  z-index: 30; /* Lower than navbar */
   padding-top: 80px;
 }
 
+/* Default collapsed state */
 .sidebar-collapsed {
   width: 70px;
 }
 
+/* Expanded state (when toggled) */
 .sidebar-expanded {
+  width: 280px;
+  z-index: 30; /* Keep below navbar */
+}
+
+/* Hover state - overlay on top but below navbar */
+.sidebar:hover {
+  width: 280px;
+  z-index: 40; /* Below navbar but above main content */
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Prevent hover expansion when sidebar is toggled open */
+.sidebar-expanded:hover {
   width: 280px;
 }
 
@@ -32,18 +47,20 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  z-index: 50;
+  z-index: 45; /* Below navbar but above sidebar hover */
+  transition: all 0.3s ease;
 }
 
 .sidebar-toggle:hover {
   background-color: #f3f4f6;
+  transform: scale(1.1);
 }
 
 .sidebar-toggle-icon {
   width: 16px;
   height: 16px;
   color: #6b7280;
-  transition: transform 0.3s;
+  transition: transform 0.3s ease;
 }
 
 .sidebar-toggle-icon-rotated {
@@ -86,7 +103,7 @@
   border-radius: 8px;
   color: #6b7280;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -114,11 +131,25 @@
 
 .sidebar-link-text {
   white-space: nowrap;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
 
-.sidebar-link-text-hidden {
+/* Hide text in collapsed state, show on hover */
+.sidebar-collapsed .sidebar-link-text {
   opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-collapsed:hover .sidebar-link-text {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Always show text when expanded */
+.sidebar-expanded .sidebar-link-text {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .sidebar-tooltip {
@@ -134,12 +165,19 @@
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
-  z-index: 50;
+  transition: opacity 0.3s ease;
+  z-index: 45; /* Below navbar but above sidebar */
 }
 
-.sidebar-link:hover .sidebar-tooltip {
+/* Show tooltip only when collapsed and not hovering the sidebar */
+.sidebar-collapsed .sidebar-link:hover .sidebar-tooltip {
   opacity: 1;
+}
+
+/* Hide tooltip when sidebar is hovered (expanded) or when toggled open */
+.sidebar-collapsed:hover .sidebar-tooltip,
+.sidebar-expanded .sidebar-tooltip {
+  opacity: 0;
 }
 
 .sidebar-dropdown {
@@ -151,7 +189,7 @@
   border-radius: 8px;
   color: #6b7280;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -179,26 +217,54 @@
 
 .sidebar-dropdown-text {
   white-space: nowrap;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
 
-.sidebar-dropdown-text-hidden {
+/* Hide text in collapsed state, show on hover */
+.sidebar-collapsed .sidebar-dropdown-text {
   opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-collapsed:hover .sidebar-dropdown-text {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Always show text when expanded */
+.sidebar-expanded .sidebar-dropdown-text {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .sidebar-dropdown-arrow {
   margin-left: auto;
   width: 20px;
   height: 20px;
-  transition: transform 0.3s;
+  transition: all 0.3s ease;
+  opacity: 1;
 }
 
 .sidebar-dropdown-arrow-rotated {
   transform: rotate(180deg);
 }
 
-.sidebar-dropdown-arrow-hidden {
+/* Hide arrow in collapsed state, show on hover */
+.sidebar-collapsed .sidebar-dropdown-arrow {
   opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-collapsed:hover .sidebar-dropdown-arrow {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Always show arrow when expanded */
+.sidebar-expanded .sidebar-dropdown-arrow {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .sidebar-submenu {
@@ -206,7 +272,8 @@
   background-color: #f9fafb;
   border-radius: 6px;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  max-height: 0;
 }
 
 .sidebar-submenu-expanded {
@@ -214,12 +281,18 @@
   padding: 8px 0;
 }
 
-.sidebar-submenu-collapsed {
-  max-height: 0;
+/* Hide submenu in collapsed state unless hovered */
+.sidebar-collapsed .sidebar-submenu {
+  display: none;
 }
 
-.sidebar-submenu-hidden {
-  display: none;
+.sidebar-collapsed:hover .sidebar-submenu {
+  display: block;
+}
+
+.sidebar-collapsed:hover .sidebar-submenu-expanded {
+  max-height: 300px;
+  padding: 8px 0;
 }
 
 .sidebar-submenu-item {
@@ -232,7 +305,7 @@
   font-size: 14px;
   color: #6b7280;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .sidebar-submenu-item:hover {
@@ -272,7 +345,7 @@
   border-radius: 8px;
   color: #ef4444;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   position: relative;
 }
 
@@ -289,9 +362,23 @@
 
 .sidebar-logout-text {
   white-space: nowrap;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
+  opacity: 1;
 }
 
-.sidebar-logout-text-hidden {
+/* Hide text in collapsed state, show on hover */
+.sidebar-collapsed .sidebar-logout-text {
   opacity: 0;
+  pointer-events: none;
+}
+
+.sidebar-collapsed:hover .sidebar-logout-text {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Always show text when expanded */
+.sidebar-expanded .sidebar-logout-text {
+  opacity: 1;
+  pointer-events: auto;
 }

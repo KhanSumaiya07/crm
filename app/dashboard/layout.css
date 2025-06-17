@@ -9,13 +9,23 @@
 
 .dashboard-main {
   flex: 1;
-  margin-left: 70px;
   padding-top: 80px;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   overflow: auto;
   min-height: 100vh;
 }
 
+/* Default state - sidebar collapsed */
+.dashboard-main-collapsed {
+  margin-left: 70px;
+}
+
+/* Expanded state - sidebar toggled open */
+.dashboard-main-expanded {
+  margin-left: 280px;
+}
+
 .dashboard-container {
   padding: 24px;
+ 
 }

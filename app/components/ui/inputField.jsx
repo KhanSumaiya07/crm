@@ -3,12 +3,16 @@
 import React from 'react';
 import styles from '../../page.module.css';
 
-const InputField = ({ label, placeholder, name, type = "text", value = "", options = [], onChange }) => {
+const InputField = ({ label, placeholder, name, type = "text", value = "", options = [], required = false, onChange }) => {
   return (
     <div className={styles.formField}>
-      <label className={styles.fieldLabel}>{label}</label>
+      <label className={styles.fieldLabel}>
+        {label}
+        {required && <span style={{ color: 'red', marginLeft: 4 }}>*</span>}
+      </label>
+      
       {type === "select" ? (
-        <select name={name} className={styles.formSelect} value={value} onChange={onChange}>
+        <select name={name} className={styles.formSelect} value={value} onChange={onChange} required={required}>
           <option value="">{placeholder}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -24,6 +28,7 @@ const InputField = ({ label, placeholder, name, type = "text", value = "", optio
           onChange={onChange}
           placeholder={placeholder}
           className={styles.formInput}
+           required={required}
         />
       )}
     </div>

@@ -14,30 +14,33 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import "./sidebar.css"
 
-const Sidebar = () => {
-  const [isClosed, setIsClosed] = useState(true) // Start collapsed
+const Sidebar = ({ onToggle }) => {
+  const [isExpanded, setIsExpanded] = useState(false) // Start collapsed
   const [openDropdown, setOpenDropdown] = useState(null)
   const pathname = usePathname()
 
   const handleToggle = () => {
-    setIsClosed(!isClosed)
+    const newState = !isExpanded
+    setIsExpanded(newState)
     // Close all dropdowns when collapsing
-    if (!isClosed) {
+    if (!newState) {
       setOpenDropdown(null)
+    }
+    // Notify parent component about the toggle
+    if (onToggle) {
+      onToggle(newState)
     }
   }
 
   const toggleDropdown = (dropdownName) => {
-    // Only allow dropdown toggle when sidebar is expanded
-    if (!isClosed) {
-      setOpenDropdown(openDropdown === dropdownName ? null : dropdownName)
-    }
+    // Allow dropdown toggle when sidebar is expanded or when hovering
+    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName)
   }
 
   return (
-    <aside className={`sidebar ${isClosed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
+    <aside className={`sidebar ${isExpanded ? "sidebar-expanded" : "sidebar-collapsed"}`}>
       <div className="sidebar-toggle" onClick={handleToggle}>
-        <ChevronRightIcon className={`sidebar-toggle-icon ${!isClosed ? "sidebar-toggle-icon-rotated" : ""}`} />
+        <ChevronRightIcon className={`sidebar-toggle-icon ${isExpanded ? "sidebar-toggle-icon-rotated" : ""}`} />
       </div>
 
       <div className="sidebar-container">
@@ -47,11 +50,10 @@ const Sidebar = () => {
               <Link
                 href="/dashboard"
                 className={`sidebar-link ${pathname === "/dashboard" ? "sidebar-link-active" : ""}`}
-                data-tooltip="Dashboard"
               >
                 <HomeIcon className="sidebar-link-icon" />
-                <span className={`sidebar-link-text ${isClosed ? "sidebar-link-text-hidden" : ""}`}>Dashboard</span>
-                {isClosed && <span className="sidebar-tooltip">Dashboard</span>}
+                <span className="sidebar-link-text">Dashboard</span>
+                {!isExpanded && <span className="sidebar-tooltip">Dashboard</span>}
               </Link>
             </li>
 
@@ -60,21 +62,16 @@ const Sidebar = () => {
               <div
                 className={`sidebar-dropdown ${pathname.startsWith("/dashboard/leads") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("leads")}
-                data-tooltip="Leads Management"
               >
                 <UserRoundIcon className="sidebar-dropdown-icon" />
-                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
-                  Leads Management
-                </span>
+                <span className="sidebar-dropdown-text">Leads Management</span>
                 <ChevronDownIcon
-                  className={`sidebar-dropdown-arrow ${openDropdown === "leads" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                  className={`sidebar-dropdown-arrow ${openDropdown === "leads" ? "sidebar-dropdown-arrow-rotated" : ""}`}
                 />
-                {isClosed && <span className="sidebar-tooltip">Leads Management</span>}
+                {!isExpanded && <span className="sidebar-tooltip">Leads Management</span>}
               </div>
 
-              <ul
-                className={`sidebar-submenu ${openDropdown === "leads" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
-              >
+              <ul className={`sidebar-submenu ${openDropdown === "leads" ? "sidebar-submenu-expanded" : ""}`}>
                 <li>
                   <Link
                     href="/dashboard/leads/add"
@@ -115,21 +112,16 @@ const Sidebar = () => {
               <div
                 className={`sidebar-dropdown ${pathname.startsWith("/dashboard/application") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("application")}
-                data-tooltip="Application"
               >
                 <FileIcon className="sidebar-dropdown-icon" />
-                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
-                  Application
-                </span>
+                <span className="sidebar-dropdown-text">Application</span>
                 <ChevronDownIcon
-                  className={`sidebar-dropdown-arrow ${openDropdown === "application" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                  className={`sidebar-dropdown-arrow ${openDropdown === "application" ? "sidebar-dropdown-arrow-rotated" : ""}`}
                 />
-                {isClosed && <span className="sidebar-tooltip">Application</span>}
+                {!isExpanded && <span className="sidebar-tooltip">Application</span>}
               </div>
 
-              <ul
-                className={`sidebar-submenu ${openDropdown === "application" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
-              >
+              <ul className={`sidebar-submenu ${openDropdown === "application" ? "sidebar-submenu-expanded" : ""}`}>
                 <li>
                   <Link
                     href="/dashboard/application/generate"
@@ -170,21 +162,16 @@ const Sidebar = () => {
               <div
                 className={`sidebar-dropdown ${pathname.startsWith("/dashboard/countries") ? "sidebar-dropdown-active" : ""}`}
                 onClick={() => toggleDropdown("countries")}
-                data-tooltip="Countries"
               >
                 <MapPinIcon className="sidebar-dropdown-icon" />
-                <span className={`sidebar-dropdown-text ${isClosed ? "sidebar-dropdown-text-hidden" : ""}`}>
-                  Countries
-                </span>
+                <span className="sidebar-dropdown-text">Countries</span>
                 <ChevronDownIcon
-                  className={`sidebar-dropdown-arrow ${openDropdown === "countries" ? "sidebar-dropdown-arrow-rotated" : ""} ${isClosed ? "sidebar-dropdown-arrow-hidden" : ""}`}
+                  className={`sidebar-dropdown-arrow ${openDropdown === "countries" ? "sidebar-dropdown-arrow-rotated" : ""}`}
                 />
-                {isClosed && <span className="sidebar-tooltip">Countries</span>}
+                {!isExpanded && <span className="sidebar-tooltip">Countries</span>}
               </div>
 
-              <ul
-                className={`sidebar-submenu ${openDropdown === "countries" && !isClosed ? "sidebar-submenu-expanded" : "sidebar-submenu-collapsed"} ${isClosed ? "sidebar-submenu-hidden" : ""}`}
-              >
+              <ul className={`sidebar-submenu ${openDropdown === "countries" ? "sidebar-submenu-expanded" : ""}`}>
                 <li>
                   <Link
                     href="/dashboard/countries/view"
@@ -209,14 +196,10 @@ const Sidebar = () => {
         <div className="sidebar-footer">
           <ul className="sidebar-footer-list">
             <li>
-              <button
-                onClick={() => console.log("Logout clicked")}
-                className="sidebar-logout-button"
-                data-tooltip="Logout"
-              >
+              <button onClick={() => console.log("Logout clicked")} className="sidebar-logout-button">
                 <LogOutIcon className="sidebar-logout-icon" />
-                <span className={`sidebar-logout-text ${isClosed ? "sidebar-logout-text-hidden" : ""}`}>Logout</span>
-                {isClosed && <span className="sidebar-tooltip">Logout</span>}
+                <span className="sidebar-logout-text">Logout</span>
+                {!isExpanded && <span className="sidebar-tooltip">Logout</span>}
               </button>
             </li>
           </ul>

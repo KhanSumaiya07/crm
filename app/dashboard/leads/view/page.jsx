@@ -1,102 +1,312 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Mail, Phone, ChevronDown, ExternalLink, Filter, Search, Plus } from "lucide-react";
-import DashboardHeader from "../../../components/ui/dashboardHeader";
-import styles from "./style.module.css";
+import { useState, useEffect } from "react"
+import { Mail, Phone, Eye, Edit, Search, Download, X } from "lucide-react"
+import DashboardHeader from "../../../components/ui/dashboardHeader"
+import SearchFilter from "../../../components/dashboard/search-filter"
+import styles from "./style.module.css"
+
 
 export default function ViewLeads() {
-  const [leads, setLeads] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [leads, setLeads] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [filters, setFilters] = useState({
+    interestedCountry: "",
+    counsellor: "",
+    leadType: "",
+    sourceOfLeads: "",
+    applicationGenerated: "",
+    studentName: "",
+  })
+  const [activeFilters, setActiveFilters] = useState([])
 
+  // Fetch leads from backend
   useEffect(() => {
-    async function fetchLeads() {
-      try {
-        const res = await fetch("/api/leads/list");
-        const data = await res.json();
-        console.log("Fetched leads:", data);
-        setLeads(data);
-      } catch (error) {
-        console.error("Error fetching leads:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    fetchLeads()
+  }, [])
 
-    fetchLeads();
-  }, []);
+  const fetchLeads = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/leads/list") // Adjust API endpoint as needed
+      const data = await response.json()
+      setLeads(data)
+    } catch (error) {
+      console.error("Error fetching leads:", error)
+      // Fallback to sample data for demo
+      setLeads(sampleLeads)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+ 
+  const formatDate = (dateString) => {
+    if (!dateString) return "-"
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-GB") // DD/MM/YYYY format
+  }
 
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
       case "new":
-        return styles.statusNew;
-      case "in progress":
-        return styles.statusProgress;
-      case "document review":
-        return styles.statusReview;
-      case "application submitted":
-        return styles.statusSubmitted;
-      case "follow-up required":
-        return styles.statusFollowup;
+        return styles.statusNew
+      case "in process":
+        return styles.statusProgress
       case "completed":
-        return styles.statusCompleted;
+        return styles.statusCompleted
+      case "future lead":
+        return styles.statusReview
+      case "not responding":
+        return styles.statusFollowup
+      case "failed":
+        return styles.statusDefault
       default:
-        return styles.statusDefault;
+        return styles.statusDefault
     }
-  };
+  }
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+    }))
+  }
+
+  const handleSearch = () => {
+    const newActiveFilters = []
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && value.trim() !== "") {
+        newActiveFilters.push({
+          key,
+          value,
+          label: getFilterLabel(key, value),
+        })
+      }
+    })
+    setActiveFilters(newActiveFilters)
+  }
+
+  const getFilterLabel = (key, value) => {
+    const labels = {
+      interestedCountry: "Country",
+      counsellor: "Counsellor",
+      leadType: "Lead Type",
+      sourceOfLeads: "Source",
+      applicationGenerated: "App Generated",
+      studentName: "Student",
+    }
+    return `${labels[key]}: ${value}`
+  }
+
+  const removeFilter = (filterKey) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterKey]: "",
+    }))
+
+    // Remove from active filters and immediately apply
+    const newActiveFilters = activeFilters.filter((filter) => filter.key !== filterKey)
+    setActiveFilters(newActiveFilters)
+  }
+
+  const clearAllFilters = () => {
+    setFilters({
+      interestedCountry: "",
+      counsellor: "",
+      leadType: "",
+      sourceOfLeads: "",
+      applicationGenerated: "",
+      studentName: "",
+    })
+
+    // Clear active filters immediately
+    setActiveFilters([])
+  }
+
   const filteredLeads = leads.filter((lead) => {
-    const matchesSearch =
-      lead.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.countryofresidence?.toLowerCase().includes(searchTerm.toLowerCase());
+    // If no active filters, show all leads
+    if (activeFilters.length === 0) {
+      return true
+    }
 
-    const matchesStatus =
-      statusFilter === "all" || lead.followUps[0]?.status?.toLowerCase() === statusFilter.toLowerCase();
+    const leadType = lead.followUps?.[0]?.leadType || ""
+    const interestedCountry = lead.preferredCountry || lead.countryofresidence || ""
+    const sourceOfLeads = lead.sourceOfLeads || ""
 
-    return matchesSearch && matchesStatus;
-  });
+    // Create a map of active filters for easier checking
+    const activeFilterMap = {}
+    activeFilters.forEach((filter) => {
+      activeFilterMap[filter.key] = filter.value
+    })
 
-  if (loading) return <p>Loading...</p>;
+    return (
+      (!activeFilterMap.interestedCountry ||
+        interestedCountry.toLowerCase().includes(activeFilterMap.interestedCountry.toLowerCase())) &&
+      (!activeFilterMap.leadType || leadType.toLowerCase().includes(activeFilterMap.leadType.toLowerCase())) &&
+      (!activeFilterMap.sourceOfLeads ||
+        sourceOfLeads.toLowerCase().includes(activeFilterMap.sourceOfLeads.toLowerCase())) &&
+      (!activeFilterMap.studentName || lead.fullname.toLowerCase().includes(activeFilterMap.studentName.toLowerCase()))
+    )
+  })
+
+  const downloadCSV = () => {
+    const headers = [
+      "Student Name",
+      "Mobile",
+      "Email",
+      "Interested Country",
+      "Status",
+      "Application Generated",
+      "Lead Date",
+      "Assign Date",
+    ]
+
+    const csvContent = [
+      headers.join(","),
+      ...filteredLeads.map((lead) => {
+        const followUp = lead.followUps?.[0] || {}
+        return [
+          `"${lead.fullname || ""}"`,
+          `"${lead.phone || ""}"`,
+          `"${lead.email || ""}"`,
+          `"${lead.preferredCountry || lead.countryofresidence || ""}"`,
+          `"${followUp.status || ""}"`,
+          `"${lead.applicationGenerated ? "Generated" : "Not Generated"}"`,
+          `"${formatDate(lead.leaddate)}"`,
+          `"${formatDate(lead.assignDate) || "-"}"`,
+        ].join(",")
+      }),
+    ].join("\n")
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    link.setAttribute("href", url)
+    link.setAttribute("download", `leads_${new Date().toISOString().split("T")[0]}.csv`)
+    link.style.visibility = "hidden"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleViewLead = (leadId) => {
+    console.log("View lead:", leadId)
+    // Add your view lead logic here
+    // For example: router.push(`/leads/${leadId}`)
+  }
+
+  const handleEditLead = (leadId) => {
+    console.log("Edit lead:", leadId)
+    // Add your edit lead logic here
+    // For example: router.push(`/leads/edit/${leadId}`)
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <DashboardHeader title="View Leads" subtitle="Manage and track all student leads" />
+        <div className={styles.loading}>Loading leads...</div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
       <DashboardHeader title="View Leads" subtitle="Manage and track all student leads" />
 
-      {/* Filters */}
-      <div className={styles.toolbar}>
-        <div className={styles.searchSection}>
-          <div className={styles.searchBox}>
-            <Search className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Search leads..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
-          <div className={styles.filterBox}>
-            <Filter className={styles.filterIcon} />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={styles.filterSelect}
-            >
-              <option value="all">All Status</option>
-              <option value="new lead">New Lead</option>
-              <option value="in progress">In Progress</option>
-              <option value="document review">Document Review</option>
-              <option value="application submitted">Application Submitted</option>
-              <option value="follow-up required">Follow-up Required</option>
-              <option value="completed">Completed</option>
-            </select>
-          </div>
+      {/* Search Filters */}
+      <div className={styles.searchContainer}>
+        <div className={styles.filtersRow}>
+          <SearchFilter
+            type="select"
+            placeholder="Interested Country"
+            value={filters.interestedCountry}
+            onChange={(value) => handleFilterChange("interestedCountry", value)}
+            options={[
+              { value: "Canada", label: "Canada" },
+              { value: "Australia", label: "Australia" },
+              { value: "UK", label: "UK" },
+              { value: "USA", label: "USA" },
+              { value: "Germany", label: "Germany" },
+              { value: "New Zealand", label: "New Zealand" },
+              { value: "India", label: "India" },
+            ]}
+          />
+          <SearchFilter
+            type="select"
+            placeholder="Lead Type"
+            value={filters.leadType}
+            onChange={(value) => handleFilterChange("leadType", value)}
+            options={[
+              { value: "Cold", label: "Cold" },
+              { value: "Completed", label: "Completed" },
+              { value: "Failed", label: "Failed" },
+              { value: "Future Lead", label: "Future Lead" },
+              { value: "Hot", label: "Hot" },
+              { value: "Medium", label: "Medium" },
+              { value: "Not Responding", label: "Not Responding" },
+            ]}
+          />
+          <SearchFilter
+            type="select"
+            placeholder="Source of Leads"
+            value={filters.sourceOfLeads}
+            onChange={(value) => handleFilterChange("sourceOfLeads", value)}
+            options={[
+              { value: "App Lead", label: "App Lead" },
+              { value: "Associate", label: "Associate" },
+              { value: "Calling", label: "Calling" },
+              { value: "Dubai Team-Faizan", label: "Dubai Team-Faizan" },
+              { value: "Dubai Team-Shilpa", label: "Dubai Team-Shilpa" },
+              { value: "FB Ads", label: "FB Ads" },
+              { value: "Message", label: "Message" },
+              { value: "Others", label: "Others" },
+              { value: "Reference", label: "Reference" },
+              { value: "Seminar", label: "Seminar" },
+              { value: "Social Media", label: "Social Media" },
+              { value: "Walk In", label: "Walk In" },
+              { value: "Website", label: "Website" },
+            ]}
+          />
         </div>
-        <button className={styles.addButton}>
-          <Plus className={styles.addIcon} />
-          Add New Lead
+
+        <div className={styles.searchRow}>
+          <SearchFilter
+            type="text"
+            placeholder="Student Name"
+            value={filters.studentName}
+            onChange={(value) => handleFilterChange("studentName", value)}
+          />
+          <button onClick={handleSearch} className={styles.searchButton}>
+            <Search className={styles.searchIcon} />
+            Search
+          </button>
+        </div>
+
+        {/* Active Filters */}
+        {activeFilters.length > 0 && (
+          <div className={styles.activeFilters}>
+            {activeFilters.map((filter) => (
+              <div key={filter.key} className={styles.filterTag}>
+                <span>{filter.label}</span>
+                <button onClick={() => removeFilter(filter.key)} className={styles.removeFilter}>
+                  <X className={styles.removeIcon} />
+                </button>
+              </div>
+            ))}
+            <button onClick={clearAllFilters} className={styles.clearAll}>
+              Clear All
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className={styles.actions}>
+        <button onClick={downloadCSV} className={styles.downloadButton}>
+          <Download className={styles.downloadIcon} />
+          Download Leads CSV
         </button>
       </div>
 
@@ -105,82 +315,87 @@ export default function ViewLeads() {
         <table className={styles.table}>
           <thead className={styles.tableHeader}>
             <tr>
-              <th className={styles.th}>Name</th>
+              <th className={styles.th}>Student Name</th>
               <th className={styles.th}>Mobile</th>
               <th className={styles.th}>Email</th>
               <th className={styles.th}>Interested Country</th>
               <th className={styles.th}>Status</th>
-              <th className={styles.th}>Assignment</th>
-              <th className={styles.th}>Add Lead Date</th>
+              <th className={styles.th}>Application Generated</th>
+              <th className={styles.th}>Lead Date</th>
               <th className={styles.th}>Assign Date</th>
               <th className={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredLeads.map((lead, index) => (
-              <tr key={lead._id || index} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
-                <td className={styles.td}>
-                  <div className={styles.nameCell}>
-                    <span className={styles.name}>{lead.fullname}</span>
-                  </div>
-                </td>
-                <td className={styles.td}>
-                  <div className={styles.contactCell}>
-                    <Phone className={styles.contactIcon} />
-                    <span>{lead.phone}</span>
-                  </div>
-                </td>
-                <td className={styles.td}>
-                  <div className={styles.contactCell}>
-                    <Mail className={styles.contactIcon} />
-                    <span>{lead.email}</span>
-                  </div>
-                </td>
-                <td className={styles.td}>
-                  <span className={styles.country}>{lead.countryofresidence}</span>
-                </td>
-                <td className={styles.td}>
-                  <span className={`${styles.statusBadge} ${getStatusClass(lead.followUps[0]?.status)}`}>
-                    {lead.followUps[0]?.status || "N/A"}
-                  </span>
-                </td>
-                <td className={styles.td}>
-                  {lead.isAssigned ? (
-                    <div className={styles.assignmentCell}>
-                      <span className={styles.assignedTo}>{lead.assignedTo}</span>
-                      <ChevronDown className={styles.dropdownIcon} />
+            {filteredLeads.map((lead, index) => {
+              const followUp = lead.followUps?.[0] || {}
+              return (
+                <tr key={lead._id} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                  <td className={styles.td}>
+                    <div className={styles.nameCell}>
+                      
+                      <span className={styles.name}>{lead.fullname || "N/A"}</span>
                     </div>
-                  ) : (
-                    <span className={styles.notAssigned}>Not Assigned</span>
-                  )}
-                </td>
-                <td className={styles.td}>
-                  <span className={styles.date}>
-                    {new Date(lead.leaddate).toLocaleDateString()}
-                  </span>
-                </td>
-                <td className={styles.td}>
-                  <span className={styles.date}>
-                    {lead.followUps[0]?.date
-                      ? new Date(lead.followUps[0].date).toLocaleDateString()
-                      : "-"}
-                  </span>
-                </td>
-                <td className={styles.td}>
-                  <div className={styles.actions}>
-                    <button className={styles.actionButton}>
-                      <ExternalLink className={styles.actionIcon} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.contactCell}>
+                      <Phone className={styles.contactIcon} />
+                      <span>{lead.phone || "N/A"}</span>
+                    </div>
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.contactCell}>
+                      <Mail className={styles.contactIcon} />
+                      <span>{lead.email || "N/A"}</span>
+                    </div>
+                  </td>
+                  <td className={styles.td}>
+                    <span className={styles.country}>{lead.preferredCountry || lead.countryofresidence || "N/A"}</span>
+                  </td>
+                  <td className={styles.td}>
+                    <span className={`${styles.statusBadge} ${getStatusClass(followUp.status)}`}>
+                      {followUp.status || "N/A"}
+                    </span>
+                  </td>
+                  <td className={styles.td}>
+                    <span
+                      className={`${styles.applicationBadge} ${lead.applicationGenerated ? styles.generated : styles.notGenerated}`}
+                    >
+                      {lead.applicationGenerated ? "Generated" : "Not Generated"}
+                    </span>
+                  </td>
+                  <td className={styles.td}>
+                    <span className={styles.date}>{formatDate(lead.leaddate)}</span>
+                  </td>
+                  <td className={styles.td}>
+                    <span className={styles.date}>{formatDate(lead.assignDate) || "-"}</span>
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.actionButtons}>
+                      <button
+                        className={styles.actionButton}
+                        onClick={() => handleViewLead(lead._id)}
+                        title="View Lead"
+                      >
+                        <Eye className={styles.actionIcon} />
+                      </button>
+                      <button
+                        className={styles.actionButton}
+                        onClick={() => handleEditLead(lead._id)}
+                        title="Edit Lead"
+                      >
+                        <Edit className={styles.actionIcon} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
-
         </table>
       </div>
 
-      {/* Footer */}
+      {/* Table Footer */}
       <div className={styles.tableFooter}>
         <div className={styles.resultsInfo}>
           Showing {filteredLeads.length} of {leads.length} leads
@@ -192,5 +407,5 @@ export default function ViewLeads() {
         </div>
       </div>
     </div>
-  );
+  )
 }

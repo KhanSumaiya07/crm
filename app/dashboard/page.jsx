@@ -28,6 +28,10 @@ import { YearDropdown } from "../components/dashboard/year-dropdown"
 import { CountriesDropdown } from "../components/dashboard/countries-dropdown"
 import { IntakeDropdown } from "../components/dashboard/intake-dropdown"
 import DashboardHeader from "../components/ui/dashboardHeader"
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchLeads } from '../../store/leadsSlice';
+
 
 export default function Dashboard() {
   // Filter states
@@ -36,54 +40,30 @@ export default function Dashboard() {
   const [selectedYear, setSelectedYear] = useState([])
   const [selectedCountries, setSelectedCountries] = useState([])
 
-  // Sample data for recent leads
-  const recentLeads = [
-    {
-      id: 1,
-      name: "John Smith",
-      email: "john@example.com",
-      phone: "+1 234 567 8901",
-      source: "Website",
-      date: "2025-06-01",
-      status: "New",
-    },
-    {
-      id: 2,
-      name: "Emma Johnson",
-      email: "emma@example.com",
-      phone: "+1 234 567 8902",
-      source: "Referral",
-      date: "2025-06-01",
-      status: "Contacted",
-    },
-    {
-      id: 3,
-      name: "Michael Brown",
-      email: "michael@example.com",
-      phone: "+1 234 567 8903",
-      source: "Social Media",
-      date: "2025-05-31",
-      status: "Interested",
-    },
-    {
-      id: 4,
-      name: "Sophia Williams",
-      email: "sophia@example.com",
-      phone: "+1 234 567 8904",
-      source: "Event",
-      date: "2025-05-30",
-      status: "New",
-    },
-    {
-      id: 5,
-      name: "James Davis",
-      email: "james@example.com",
-      phone: "+1 234 567 8905",
-      source: "Website",
-      date: "2025-05-30",
-      status: "Contacted",
-    },
-  ]
+ const dispatch = useDispatch();
+const { leads, loading, error } = useSelector((state) => state.leads);
+
+useEffect(() => {
+  dispatch(fetchLeads());
+}, [dispatch]);
+
+const totalLeads = leads.length;
+
+const connectedLeads = leads.filter(
+  (lead) => lead.followUps[0]?.status === "Connected"
+).length;
+
+const notConnectedLeads = leads.filter(
+  (lead) => lead.followUps[0]?.status === "Not Connected"
+).length;
+
+const rejectedLeads = leads.filter(
+  (lead) => lead.followUps[0]?.status === "Rejected"
+).length;
+
+
+// Get 5 most recent leads (you can sort if needed)
+const recentLeads = leads.slice(0, 5);
 
   // Sample data for recent applications
   const recentApplications = [
@@ -149,7 +129,7 @@ export default function Dashboard() {
 
   return (
     
-    <div className="dashboard-container">
+    <div>
      
       {/* Header */}
      
@@ -171,16 +151,17 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Leads Management Section */}
-      <div className="dashboard-section">
-        <SectionHeader title="Leads Management" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Total Leads" value="120" icon={<UsersIcon />} accentColor="blue" />
-          <StatCard title="Connected" value="60" icon={<CheckCircleIcon />} accentColor="green" />
-          <StatCard title="Not Connected" value="30" icon={<AlertCircleIcon />} accentColor="orange" />
-          <StatCard title="Rejected" value="15" icon={<XCircleIcon />} accentColor="red" />
-        </div>
-      </div>
+     {/* Leads Management Section */}
+<div className="dashboard-section">
+  <SectionHeader title="Leads Management" />
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <StatCard title="Total Leads" value={totalLeads} icon={<UsersIcon />} accentColor="blue" />
+    <StatCard title="Connected" value={connectedLeads} icon={<CheckCircleIcon />} accentColor="green" />
+    <StatCard title="Not Connected" value={notConnectedLeads} icon={<AlertCircleIcon />} accentColor="orange" />
+    <StatCard title="Rejected" value={rejectedLeads} icon={<XCircleIcon />} accentColor="red" />
+  </div>
+</div>
+
 
       {/* Applications Overview Section */}
       <div className="dashboard-section">
@@ -218,45 +199,65 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Leads Table */}
-      <div className="dashboard-section">
-        <SectionHeader
-          title="Recent Leads"
-          action={
-            <Button variant="outline" size="sm">
-              <ListIcon className="mr-2" />
-              View All
-            </Button>
-          }
-        />
-        <DataTable
-          title="Latest Lead Activities"
-          columns={[
-            { header: "Name", accessor: "name" },
-            { header: "Email", accessor: "email" },
-            { header: "Phone", accessor: "phone" },
-            { header: "Source", accessor: "source" },
-            { header: "Date", accessor: "date" },
-            {
-              header: "Status",
-              accessor: "status",
-              cell: (value) => (
-                <span
-                  className={`status-badge ${value === "New" ? "status-new" : value === "Contacted" ? "status-contacted" : "status-interested"}`}
-                >
-                  {value}
-                </span>
-              ),
-            },
-          ]}
-          data={recentLeads}
-          action={
-            <Button variant="ghost" size="sm">
-              Export
-            </Button>
-          }
-        />
-      </div>
+    {/* Recent Leads Table */}
+<div className="dashboard-section">
+  <SectionHeader
+    title="Recent Leads"
+    action={
+      <Button variant="outline" size="sm">
+        <ListIcon className="mr-2" />
+        View All
+      </Button>
+    }
+  />
+ <DataTable
+  title="Latest Lead Activities"
+  columns={[
+  { header: "Name", accessor: "fullname" },
+  { header: "Email", accessor: "email" },
+  { header: "Phone", accessor: "phone" },
+
+  // Source = followUps[0].mode
+  {
+    header: "Source",
+    accessor: 'followUps[0].mode',
+  },
+
+  {
+    header: "Date",
+    accessor: "createdAt",
+    cell: (date) => new Date(date).toLocaleDateString(),
+  },
+
+  // Status = followUps[0].status
+  {
+    header: "Status",
+    accessor: (row) => row.followUps?.[0]?.status || "N/A",
+    cell: (value) => (
+      <span
+        className={`status-badge ${
+          value === "New"
+            ? "status-new"
+            : value === "Connected"
+            ? "status-contacted"
+            : value === "Not Connected"
+            ? "status-notconnected"
+            : value === "Rejected"
+            ? "status-rejected"
+            : ""
+        }`}
+      >
+        {value}
+      </span>
+    ),
+  },
+]}
+
+  data={recentLeads}
+/>
+
+</div>
+
 
       {/* Recent Applications Table */}
       <div className="dashboard-section">

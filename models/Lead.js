@@ -51,7 +51,6 @@ const leadSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female', 'Other']
   },
   countryofresidence: {
     type: String
