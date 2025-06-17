@@ -1,52 +1,49 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SendMessageModal from '../../../components/SendMessageModal'; // path adjust kar lena
 
 export default function MessageLeadsPage() {
   const [leads, setLeads] = useState([]);
   const [selectedLeads, setSelectedLeads] = useState([]);
-  const [templateMsg, setTemplateMsg] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchLeads = async () => {
       const res = await fetch('/api/leads/list');
       const data = await res.json();
-      console.log(data)
       setLeads(data);
     };
     fetchLeads();
   }, []);
 
-  const toggleSelect = (id) => {
+  const toggleSelect = (lead) => {
     setSelectedLeads((prev) =>
-      prev.includes(id) ? prev.filter((leadId) => leadId !== id) : [...prev, id]
+      prev.find((l) => l._id === lead._id)
+        ? prev.filter((l) => l._id !== lead._id)
+        : [...prev, lead]
     );
   };
 
   const selectAll = () => {
     if (selectedLeads.length === leads.length) setSelectedLeads([]);
-    else setSelectedLeads(leads.map((lead) => lead._id));
+    else setSelectedLeads(leads);
   };
 
-  const sendMessages = async () => {
-    if (!templateMsg.trim() || selectedLeads.length === 0) {
-      alert('Select leads and enter a message.');
-      return;
-    }
-
+  const sendMessages = async ({ subject, message }) => {
     const res = await fetch('/api/leads/sendmessages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        leadIds: selectedLeads,
-        messageTemplate: templateMsg,
+        leadIds: selectedLeads.map((l) => l._id),
+        subject,
+        messageTemplate: message,
       }),
     });
 
     if (res.ok) {
       alert('Messages sent!');
       setSelectedLeads([]);
-      setTemplateMsg('');
     } else {
       alert('Failed to send');
     }
@@ -61,7 +58,11 @@ export default function MessageLeadsPage() {
           <thead className="bg-gray-100 text-left">
             <tr>
               <th className="p-2">
-                <input type="checkbox" onChange={selectAll} checked={selectedLeads.length === leads.length} />
+                <input
+                  type="checkbox"
+                  onChange={selectAll}
+                  checked={selectedLeads.length === leads.length}
+                />
               </th>
               <th className="p-2">Name</th>
               <th className="p-2">Email</th>
@@ -74,8 +75,8 @@ export default function MessageLeadsPage() {
                 <td className="p-2">
                   <input
                     type="checkbox"
-                    checked={selectedLeads.includes(lead._id)}
-                    onChange={() => toggleSelect(lead._id)}
+                    checked={selectedLeads.some((l) => l._id === lead._id)}
+                    onChange={() => toggleSelect(lead)}
                   />
                 </td>
                 <td className="p-2">{lead.fullname}</td>
@@ -87,19 +88,21 @@ export default function MessageLeadsPage() {
         </table>
       </div>
 
-      <textarea
-        className="w-full border rounded p-3 h-32 mb-4"
-        placeholder="Message template (you can use {{name}}, {{email}}, etc.)"
-        value={templateMsg}
-        onChange={(e) => setTemplateMsg(e.target.value)}
-      />
-
       <button
-        onClick={sendMessages}
+        onClick={() => setShowModal(true)}
+        disabled={selectedLeads.length === 0}
         className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
       >
-        Send Message to Selected Leads
+        Compose Message
       </button>
+
+      {showModal && (
+        <SendMessageModal
+          selectedLeads={selectedLeads}
+          onClose={() => setShowModal(false)}
+          onSend={sendMessages}
+        />
+      )}
     </div>
   );
 }

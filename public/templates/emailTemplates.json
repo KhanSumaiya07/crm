@@ -1,0 +1,20 @@
+[
+  {
+    "id": "welcome_student",
+    "title": "Welcome to {{consultancy_name}}!",
+    "subject": "Welcome aboard, {{name}}!",
+    "message": "Hi {{name}},\n\nWelcome to {{consultancy_name}}! We're thrilled to help you achieve your dream of studying abroad. Your journey has just begun, and we're here to guide you every step of the way.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "visa_status_update",
+    "title": "Visa Status Update",
+    "subject": "Update on your Visa Application",
+    "message": "Dear {{name}},\n\nWe wanted to inform you that your visa application status has been updated. Please login to your student portal or contact your counsellor for more information.\n\nBest,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "documents_reminder",
+    "title": "Documents Required Reminder",
+    "subject": "Reminder: Submit Your Documents",
+    "message": "Hi {{name}},\n\nThis is a gentle reminder to upload the necessary documents (Passport, Marksheets, etc.) to avoid delays in your application process.\n\nLet us know if you need help.\n\nThank you,\nTeam {{consultancy_name}}"
+  }
+]
