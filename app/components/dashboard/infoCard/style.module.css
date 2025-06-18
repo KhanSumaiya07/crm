@@ -34,10 +34,14 @@
 }
 
 .section-title {
-  color: var(--primary-color);
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
+ font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 0px;
+    line-height: 150%;
 }
 
 .edit-button {

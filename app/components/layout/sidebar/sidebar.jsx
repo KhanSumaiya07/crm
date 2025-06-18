@@ -82,8 +82,8 @@ const Sidebar = ({ onToggle }) => {
                 </li>
                 <li>
                   <Link
-                    href="/dashboard/leads/view"
-                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/view" ? "sidebar-submenu-item-active" : ""}`}
+                    href="/dashboard/leads/viewLeads"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/viewLeads" ? "sidebar-submenu-item-active" : ""}`}
                   >
                     <span>View</span>
                   </Link>

@@ -1,0 +1,118 @@
+
+.content {
+  margin-bottom: 2rem;
+}
+
+.addLeadPage{
+  background-color: #fff;
+  padding-top: 24px;
+}
+.displayGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.displayField {
+  display: flex;
+  flex-direction: column;
+}
+
+.displayLabel {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.displayValue {
+  font-weight: 500;
+  color: #111827;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.formGridTwo {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+}
+
+.formFieldFull {
+  grid-column: span 2;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+    padding: .5rem 2rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 24px;
+    border-radius: 4px;
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background-color: #f9fafb;
+}
+
+.buttonPrimary {
+
+  color: #fff;
+    background-color: var(--primary-color);
+    padding: .5rem 2rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 24px;
+    border-radius: 4px;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .displayGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGridTwo {
+    grid-template-columns: 1fr;
+  }
+
+  .formFieldFull {
+    grid-column: span 1;
+  }
+}

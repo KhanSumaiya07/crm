@@ -3,7 +3,10 @@
   margin-bottom: 2rem;
 }
 
-
+.addLeadPage{
+  background-color: #fff;
+  padding-top: 24px;
+}
 .displayGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -71,6 +74,15 @@
   background-color: white;
   color: #374151;
   border: 1px solid #d1d5db;
+    padding: .5rem 2rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .buttonSecondary:hover:not(:disabled) {
@@ -78,14 +90,222 @@
 }
 
 .buttonPrimary {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 2rem;
+
+  color: #fff;
+    background-color: var(--primary-color);
+    padding: .5rem 2rem;
+    font-size: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .buttonPrimary:hover:not(:disabled) {
   background-color: #1d4ed8;
 }
+
+/* Header Actions */
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 24px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Follow-up Styles */
+.followUpHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.followUpItem {
+  background: #f9fafb;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.followUpHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.followUpDate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.followUpBadges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.badge.leadType {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.badge.mode {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.badge.status {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.followUpRemark {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.noFollowUps {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 20px;
+}
+
+.followUpEdit {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.followUpEditItem {
+  background: #f9fafb;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.followUpEditHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.followUpEditHeader h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #ef4444;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.removeButton:hover {
+  background: #dc2626;
+}
+
+.addFollowUpButton {
+  padding: 12px 20px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+}
+
+.addFollowUpButton:hover {
+  background: var(--primary-dark);
+}
+
+/* Status Overview */
+.statusOverview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 0 24px;
+}
+
+.statusCard {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e1e5e9;
+  text-align: center;
+}
+
+.statusLabel {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.statusValue {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.appStatusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
 
 @media (max-width: 768px) {
   .displayGrid,
@@ -99,5 +319,13 @@
 
   .formFieldFull {
     grid-column: span 1;
+  }
+   .headerActions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .actionButtons {
+    justify-content: center;
   }
 }

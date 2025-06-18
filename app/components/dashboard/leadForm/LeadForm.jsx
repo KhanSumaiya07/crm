@@ -1,11 +1,11 @@
 "use client"
 import { useState } from "react"
 import { User, GraduationCap, Phone, MapPin } from "lucide-react"
-import InfoCard from "../../../components/dashboard/infoCard/infoCard"
-import InputField from "../../../components/ui/inputField"
-import DashboardHeader from "../../../components/ui/dashboardHeader"
-import StepProgress from "../../../components/ui/step-progress"
-import ValidationModal from "../../../components/ui/validation-modal"
+import InfoCard from "../infoCard/infoCard"
+import InputField from "../../ui/inputField"
+import DashboardHeader from "../../ui/dashboardHeader"
+import StepProgress from "../../ui/step-progress"
+import ValidationModal from "../../ui/validation-modal"
 import styles from "./style.module.css"
 
 const steps = [
@@ -14,7 +14,9 @@ const steps = [
   { id: 3, title: "Follow-up Info", status: "pending" },
 ]
 
-const AddLead = () => {
+const LeadForm = ({ leadData = {}, mode = "add" }) => {
+    const isView = mode === "view";
+  const isEdit = mode === "edit";
   const [currentStep, setCurrentStep] = useState(1)
   const [showValidationModal, setShowValidationModal] = useState(false)
 
@@ -187,38 +189,47 @@ const AddLead = () => {
 
   const renderStep1 = () => (
     <>
-      <InfoCard title="Personal Information" icon={User} showEditButton={false}>
-        <div className={styles.formGrid}>
-          <InputField
-            label="Full Name"
-            placeholder="Enter full name"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required={true}
-          />
-          <InputField label="Date of Birth" name="DOB" type="date" value={formData.DOB} onChange={handleChange} />
-          <InputField
-            label="Gender"
-            name="gender"
-            placeholder="Select gender"
-            type="select"
-            value={formData.gender}
-            onChange={handleChange}
-            options={[
-              { value: "Male", label: "Male" },
-              { value: "Female", label: "Female" },
-              { value: "Other", label: "Other" },
-            ]}
-          />
-        </div>
-      </InfoCard>
+     <InfoCard title="Personal Information" icon={User}>
+  <div className={styles.formGrid}>
+    <InputField
+      label="Full Name"
+      name="fullname"
+      value={formData.fullname}
+      onChange={handleChange}
+      placeholder="Enter full name"
+      required
+      isView={isView} // 👈 This is key!
+    />
+    <InputField
+      label="DOB"
+      name="DOB"
+      type="date"
+      value={formData.DOB}
+      onChange={handleChange}
+      isView={isView}
+    />
+    <InputField
+      label="Gender"
+      name="gender"
+      type="select"
+      value={formData.gender}
+      onChange={handleChange}
+      options={[
+        { value: "Male", label: "Male" },
+        { value: "Female", label: "Female" },
+        { value: "Other", label: "Other" },
+      ]}
+      isView={isView}
+    />
+  </div>
+</InfoCard>
 
       <InfoCard title="Contact Information" icon={MapPin} showEditButton={false}>
         <div className={styles.formGrid}>
           <InputField
             label="Email"
             name="email"
+            
             placeholder="Enter email address"
             type="email"
             value={formData.email}
@@ -277,34 +288,6 @@ const AddLead = () => {
         </div>
       </InfoCard>
 
-      <InfoCard title="Source Information" icon={User} showEditButton={false}>
-        <div className={styles.formGrid}>
-          <InputField
-            label="Source of Leads"
-            name="sourceOfLeads"
-            type="select"
-            value={formData.sourceOfLeads}
-            placeholder="Select Source"
-            onChange={handleChange}
-            required={true}
-            options={[
-              { value: "App Lead", label: "App Lead" },
-              { value: "Associate", label: "Associate" },
-              { value: "Calling", label: "Calling" },
-              { value: "Dubai Team-Faizan", label: "Dubai Team-Faizan" },
-              { value: "Dubai Team-Shilpa", label: "Dubai Team-Shilpa" },
-              { value: "FB Ads", label: "FB Ads" },
-              { value: "Message", label: "Message" },
-              { value: "Others", label: "Others" },
-              { value: "Reference", label: "Reference" },
-              { value: "Seminar", label: "Seminar" },
-              { value: "Social Media", label: "Social Media" },
-              { value: "Walk In", label: "Walk In" },
-              { value: "Website", label: "Website" },
-            ]}
-          />
-        </div>
-      </InfoCard>
     </>
   )
 
@@ -479,11 +462,10 @@ const AddLead = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <DashboardHeader title="Add Lead" subtitle="Enter student info to create a new lead." />
-
+    <div className={styles.container} > 
+       <DashboardHeader title="Add Lead" subtitle="Enter student info to create a new lead." />
     <div className={styles.addLeadPage}>
-        <StepProgress
+      <StepProgress
         steps={steps.map((step, index) => ({
           ...step,
           status: index + 1 < currentStep ? "complete" : index + 1 === currentStep ? "current" : "pending",
@@ -518,4 +500,4 @@ const AddLead = () => {
   )
 }
 
-export default AddLead
+export default LeadForm

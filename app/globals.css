@@ -61,7 +61,7 @@ button{
 }
 
 .btn-default {
-  background-color: #2563eb;
+  background-color: var(--primary-color);
   color: white;
   height: 2.5rem;
   padding: 0 1rem;
@@ -495,9 +495,9 @@ button{
   margin-bottom: 24px;
 }
 
-.dashboard-section {
+/* .dashboard-section {
   margin-bottom: 2rem;
-}
+} */
 
 .dashboard-title {
   font-size: 1.5rem;

@@ -12,7 +12,7 @@
 
 /* Default collapsed state */
 .sidebar-collapsed {
-  width: 70px;
+  width: 75px;
 }
 
 /* Expanded state (when toggled) */
@@ -113,7 +113,7 @@
 }
 
 .sidebar-link-active {
-  background-color: #2563eb;
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -199,12 +199,12 @@
 }
 
 .sidebar-dropdown-active {
-  background-color: #2563eb;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .sidebar-dropdown-active:hover {
-  background-color: #1d4ed8;
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -313,12 +313,12 @@
 }
 
 .sidebar-submenu-item-active {
-  background-color: #2563eb;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .sidebar-submenu-item-active:hover {
-  background-color: #1d4ed8;
+  background-color: var(--primary-color);
   color: white;
 }
 

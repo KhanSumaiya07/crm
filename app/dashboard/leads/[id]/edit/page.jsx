@@ -1,12 +1,15 @@
 "use client"
-import { useState } from "react"
-import { User, GraduationCap, Phone, MapPin } from "lucide-react"
-import InfoCard from "../../../components/dashboard/infoCard/infoCard"
-import InputField from "../../../components/ui/inputField"
-import DashboardHeader from "../../../components/ui/dashboardHeader"
-import StepProgress from "../../../components/ui/step-progress"
-import ValidationModal from "../../../components/ui/validation-modal"
-import styles from "./style.module.css"
+import { useState, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { useRouter } from "next/navigation"
+import { User, GraduationCap, Phone, MapPin, ArrowLeft } from "lucide-react"
+import InfoCard from "../../../../components/dashboard/infoCard/infoCard"
+import InputField from "../../../../components/ui/inputField"
+import DashboardHeader from "../../../../components/ui/dashboardHeader"
+import StepProgress from "../../../../components/ui/step-progress"
+import ValidationModal from "../../../../components/ui/validation-modal"
+import { fetchSingleLead, updateLead, clearSingleLead } from "../../../../../store/leadsSlice"
+import styles from "../../add/style.module.css"
 
 const steps = [
   { id: 1, title: "Personal Information", status: "current" },
@@ -14,10 +17,13 @@ const steps = [
   { id: 3, title: "Follow-up Info", status: "pending" },
 ]
 
-const AddLead = () => {
+export default function EditLeadPage({ params }) {
+  const dispatch = useDispatch()
+  const router = useRouter()
+  const { singleLead, singleLeadLoading, updateLoading, error } = useSelector((state) => state.leads)
+
   const [currentStep, setCurrentStep] = useState(1)
   const [showValidationModal, setShowValidationModal] = useState(false)
-
   const [formData, setFormData] = useState({
     fullname: "",
     DOB: "",
@@ -28,16 +34,12 @@ const AddLead = () => {
     highestQualification: "",
     passoutYear: "",
     academicScore: "",
-    sourceOfLeads: "", // New field
-
-    // Study Preferences
+    sourceOfLeads: "",
     preferredCountry: "",
     preferredCourse: "",
     intake: "",
     ieltsScore: "",
     budget: "",
-
-    // Follow-up Info
     followUps: [
       {
         leadType: "",
@@ -49,6 +51,51 @@ const AddLead = () => {
       },
     ],
   })
+
+  useEffect(() => {
+    if (params.id) {
+      dispatch(fetchSingleLead(params.id))
+    }
+
+    return () => {
+      dispatch(clearSingleLead())
+    }
+  }, [dispatch, params.id])
+
+  useEffect(() => {
+    if (singleLead) {
+      setFormData({
+        fullname: singleLead.fullname || "",
+        DOB: singleLead.DOB || "",
+        gender: singleLead.gender || "",
+        email: singleLead.email || "",
+        phone: singleLead.phone || "",
+        countryofresidence: singleLead.countryofresidence || "",
+        highestQualification: singleLead.highestQualification || "",
+        passoutYear: singleLead.passoutYear || "",
+        academicScore: singleLead.academicScore || "",
+        sourceOfLeads: singleLead.sourceOfLeads || "",
+        preferredCountry: singleLead.preferredCountry || "",
+        preferredCourse: singleLead.preferredCourse || "",
+        intake: singleLead.intake || "",
+        ieltsScore: singleLead.ieltsScore || "",
+        budget: singleLead.budget || "",
+        followUps:
+          singleLead.followUps && singleLead.followUps.length > 0
+            ? singleLead.followUps
+            : [
+                {
+                  leadType: "",
+                  date: "",
+                  time: "",
+                  mode: "",
+                  status: "New",
+                  remark: "",
+                },
+              ],
+      })
+    }
+  }, [singleLead])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -100,7 +147,6 @@ const AddLead = () => {
 
   const handleStepClick = (stepId) => {
     if (stepId > currentStep) {
-      // Validate current step before moving forward
       let isValid = true
 
       if (currentStep === 1) {
@@ -122,6 +168,8 @@ const AddLead = () => {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
+    } else {
+      router.back()
     }
   }
 
@@ -132,57 +180,47 @@ const AddLead = () => {
         return
       }
 
-      console.log("Submit Lead button clicked - proceeding with submission")
-
       try {
-        const res = await fetch("/api/leads/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        })
+        const resultAction = await dispatch(
+          updateLead({
+            id: params.id,
+            data: formData,
+          }),
+        )
 
-        const result = await res.json()
-        console.log("API Response:", result)
-
-        if (res.ok) {
-          alert("Lead added successfully")
-          // Reset form
-          setFormData({
-            fullname: "",
-            DOB: "",
-            gender: "",
-            email: "",
-            phone: "",
-            countryofresidence: "",
-            highestQualification: "",
-            passoutYear: "",
-            academicScore: "",
-            sourceOfLeads: "",
-            preferredCountry: "",
-            preferredCourse: "",
-            intake: "",
-            ieltsScore: "",
-            budget: "",
-            followUps: [
-              {
-                leadType: "",
-                date: "",
-                time: "",
-                mode: "",
-                status: "New",
-                remark: "",
-              },
-            ],
-          })
-          setCurrentStep(1)
+        if (updateLead.fulfilled.match(resultAction)) {
+          alert("Lead updated successfully")
+          router.back()
         } else {
-          alert(result.error || "Something went wrong")
+          alert("Failed to update lead")
         }
       } catch (error) {
-        console.error("Error submitting form:", error)
-        alert("An error occurred while submitting the form")
+        console.error("Error updating lead:", error)
+        alert("An error occurred while updating the lead")
       }
     }
+  }
+
+  if (singleLeadLoading) {
+    return (
+      <div className={styles.container}>
+        <DashboardHeader title="Edit Lead" subtitle="Loading lead details..." />
+        <div className={styles.addLeadPage}>
+          <div className={styles.loading}>Loading...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <DashboardHeader title="Edit Lead" subtitle="Error loading lead details" />
+        <div className={styles.addLeadPage}>
+          <div className={styles.error}>Error: {error}</div>
+        </div>
+      </div>
+    )
   }
 
   const renderStep1 = () => (
@@ -480,42 +518,52 @@ const AddLead = () => {
 
   return (
     <div className={styles.container}>
-      <DashboardHeader title="Add Lead" subtitle="Enter student info to create a new lead." />
+      <DashboardHeader title="Edit Lead" subtitle="Update student information and lead details." />
 
-    <div className={styles.addLeadPage}>
-        <StepProgress
-        steps={steps.map((step, index) => ({
-          ...step,
-          status: index + 1 < currentStep ? "complete" : index + 1 === currentStep ? "current" : "pending",
-        }))}
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-      />
-
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className={styles.content}>{getCurrentStepContent()}</div>
-
-        <div className={styles.navigation}>
-          <button type="button" onClick={handleBack} disabled={currentStep === 1} className={styles.buttonSecondary}>
+      <div className={styles.addLeadPage}>
+        <div className={styles.headerActions}>
+          <button onClick={handleBack} className={styles.buttonSecondary}>
+            <ArrowLeft className="w-4 h-4" />
             Back
           </button>
-
-          {currentStep < steps.length ? (
-            <button type="button" onClick={handleNext} className={styles.buttonPrimary}>
-              Next
-            </button>
-          ) : (
-            <button type="button" onClick={handleFinalSubmit} className={styles.buttonPrimary}>
-              Submit Lead
-            </button>
-          )}
         </div>
-      </form>
 
-      <ValidationModal isOpen={showValidationModal} onClose={() => setShowValidationModal(false)} />
-    </div>
+        <StepProgress
+          steps={steps.map((step, index) => ({
+            ...step,
+            status: index + 1 < currentStep ? "complete" : index + 1 === currentStep ? "current" : "pending",
+          }))}
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+        />
+
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className={styles.content}>{getCurrentStepContent()}</div>
+
+          <div className={styles.navigation}>
+            <button type="button" onClick={handleBack} disabled={currentStep === 1} className={styles.buttonSecondary}>
+              Back
+            </button>
+
+            {currentStep < steps.length ? (
+              <button type="button" onClick={handleNext} className={styles.buttonPrimary}>
+                Next
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleFinalSubmit}
+                className={styles.buttonPrimary}
+                disabled={updateLoading}
+              >
+                {updateLoading ? "Updating..." : "Update Lead"}
+              </button>
+            )}
+          </div>
+        </form>
+
+        <ValidationModal isOpen={showValidationModal} onClose={() => setShowValidationModal(false)} />
+      </div>
     </div>
   )
 }
-
-export default AddLead

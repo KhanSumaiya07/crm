@@ -6,7 +6,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-left-width: 4px;
+  border-left-width: 3px !important;
+  border: 1px solid #ebebeb;
 }
 
 .stat-card.blue {
