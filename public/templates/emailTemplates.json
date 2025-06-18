@@ -1,0 +1,152 @@
+[
+  {
+    "id": "application_status_update",
+    "title": "Update for Application Status",
+    "subject": "Your application has been submitted",
+    "message": "Dear {{name}},\n\nYour application has been successfully submitted to the university. We'll keep you updated on the next steps.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "third_installment_payment",
+    "title": "Payment of Third Installment",
+    "subject": "Time to Pay Your Third Installment",
+    "message": "Dear {{name}},\n\nCongratulations on completing your university and scholarship applications! Please proceed with your third installment payment for visa processing.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "application_process_started",
+    "title": "First Step: Application Process",
+    "subject": "Your Application Process Has Started",
+    "message": "Dear {{name}},\n\nWe’ve initiated your application process. We’ll keep you informed as we proceed further.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "shortlisted_universities_italy",
+    "title": "Shortlisted Universities and Courses (Italy)",
+    "subject": "Your Shortlisted Universities and Courses",
+    "message": "Dear {{name}},\n\nPlease find the attached list of shortlisted universities and courses. Kindly confirm your preferences.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "scholarship_step",
+    "title": "Second Step - Scholarship",
+    "subject": "Start Your Scholarship Procedure",
+    "message": "Dear {{name}},\n\nCongratulations on receiving your offer! It's time to begin your scholarship process. Please refer to the attached checklist.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "post_visa_guidelines",
+    "title": "Guidelines for Post Italy Visa",
+    "subject": "Prepare for Your Arrival in Italy",
+    "message": "Dear {{name}},\n\nPlease review these important post-arrival guidelines to ensure a smooth transition to Italy.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "visa_success",
+    "title": "Visa Success (Italy)",
+    "subject": "Congratulations! Visa Approved",
+    "message": "Dear {{name}},\n\nYour visa application has been approved. Congratulations on this major milestone!\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "visa_processing",
+    "title": "Visa Processing",
+    "subject": "Final Step: Visa Documentation",
+    "message": "Dear {{name}},\n\nWe’ve reached the visa stage. Please refer to the upcoming checklist and send the required documents.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "scholarship_status",
+    "title": "Scholarship Status",
+    "subject": "Scholarship Process Update",
+    "message": "Dear {{name}},\n\nYour scholarship request has been submitted. Please stay updated through your email notifications.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "scholarship_documents_reminder",
+    "title": "Reminder Regarding Scholarship Documents",
+    "subject": "Submit Scholarship Documents ASAP",
+    "message": "Dear {{name}},\n\nThis is a reminder to submit your legalized and apostilled scholarship documents.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "second_installment_payment",
+    "title": "Payment of the Second Installment",
+    "subject": "Please Pay Second Installment",
+    "message": "Dear {{name}},\n\nYour application phase is complete. Now, please proceed with your second installment to avoid delays in scholarship processing.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "finalize_admission_offer_letter",
+    "title": "Finalizing Admission: Offer Letter and Next Steps",
+    "subject": "Accept Your Offer Letter",
+    "message": "Dear {{name}},\n\nYou’ve received multiple offer letters. Kindly confirm your admission by accepting the offer from your preferred university.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "offer_letter_received",
+    "title": "University Offer Letter (Italy)",
+    "subject": "Offer Letter from University",
+    "message": "Dear {{name}},\n\nCongratulations on receiving your university offer letter! We're excited for your journey ahead.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "first_installment_payment",
+    "title": "Payment of the First Installment",
+    "subject": "Begin Your Journey: First Installment",
+    "message": "Dear {{name}},\n\nPlease proceed with the payment of your first installment to begin your application process to Italy.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "mou_signup_italy",
+    "title": "Sign Up with Edu-Wire (Italy MOU Agreement)",
+    "subject": "Confirm Your Registration with MOU",
+    "message": "Dear {{name}},\n\nYou are now registered with Edu-Wire. Kindly sign and submit the MOU to proceed.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "payment_received_confirmation",
+    "title": "Payment Received",
+    "subject": "Tuition Payment Confirmation",
+    "message": "Dear {{name}},\n\nYour tuition payment has been received and shared with the university. Next steps will follow shortly.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "documentation_required",
+    "title": "Documentation",
+    "subject": "Required Documents Submission",
+    "message": "Dear {{name}},\n\nPlease submit the necessary documents to proceed with your application.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "mou_next_step",
+    "title": "Sign the MOU for Your Study Abroad Journey",
+    "subject": "Take the Next Step with Edu-Wire",
+    "message": "Dear {{name}},\n\nWe’re excited to move forward! Please sign the MOU to confirm your participation in our study abroad program.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "already_taken",
+    "title": "Opportunity Fulfilled",
+    "subject": "Thank You for Considering Edu-Wire",
+    "message": "Dear {{name}},\n\nThank you for considering Edu-Wire for your abroad studies. We wish you the best in your chosen path.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "next_year_planning",
+    "title": "Planning for Next Year",
+    "subject": "Start Preparing for Next Year’s Application",
+    "message": "Dear {{name}},\n\nWe’re excited to help you plan ahead for next year’s abroad studies. Let’s stay in touch!\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "on_hold",
+    "title": "Study Plan on Hold",
+    "subject": "Your Study Abroad Plan is on Hold",
+    "message": "Dear {{name}},\n\nWe understand you've paused your study abroad plan. We’re here whenever you’re ready to resume.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "not_interested",
+    "title": "Not Interested",
+    "subject": "No Worries, You Can Always Reach Out",
+    "message": "Dear {{name}},\n\nWe respect your decision and thank you for considering Edu-Wire. Feel free to reconnect anytime.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "new_lead",
+    "title": "Welcome New Lead",
+    "subject": "Start Your Study Abroad Journey",
+    "message": "Dear {{name}},\n\nWelcome to Edu-Wire! We’re thrilled to help you start your journey toward international education.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "invalid_mobile",
+    "title": "Invalid Mobile Number",
+    "subject": "Update Your Contact Information",
+    "message": "Dear {{name}},\n\nWe couldn’t reach you. Please update your contact number so we can assist you better.\n\nRegards,\nTeam {{consultancy_name}}"
+  },
+  {
+    "id": "not_answered_followup",
+    "title": "Reconnect Opportunity",
+    "subject": "Follow-Up on Your Inquiry",
+    "message": "Dear {{name}},\n\nWe’ve tried reaching you. Let us know when would be a good time to connect.\n\nRegards,\nTeam {{consultancy_name}}"
+  }
+]

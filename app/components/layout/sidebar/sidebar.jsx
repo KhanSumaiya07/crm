@@ -130,16 +130,16 @@ const Sidebar = ({ onToggle }) => {
               <ul className={`sidebar-submenu ${openDropdown === "application" ? "sidebar-submenu-expanded" : ""}`}>
                 <li>
                   <Link
-                    href="/dashboard/application/generate"
-                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/generate" ? "sidebar-submenu-item-active" : ""}`}
+                    href="/dashboard/applications/add"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/applications/add" ? "sidebar-submenu-item-active" : ""}`}
                   >
                     <span>Generate Application</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/dashboard/application/view"
-                    className={`sidebar-submenu-item ${pathname === "/dashboard/application/view" ? "sidebar-submenu-item-active" : ""}`}
+                    href="/dashboard/applications/view"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/applications/view" ? "sidebar-submenu-item-active" : ""}`}
                   >
                     <span>View Application</span>
                   </Link>
