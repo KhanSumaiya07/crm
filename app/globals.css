@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 :root {
   /* Colors */
   --primary-color: #0d6493;
@@ -10,7 +12,7 @@
   --border-color: #dbe2e8;
 
   /* 🅰️ Typography - Desktop base */
-  --font-family:'Inter', sans-serif;
+  /* --font-family:'Inter', sans-serif; */
 }
 html,
 body {
@@ -19,7 +21,8 @@ body {
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: "Mulish", sans-serif;
+  
   background-color: var(--background-color);
 }
 

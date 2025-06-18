@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Mail, Phone, Eye, Edit, Search, Download, X } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { Mail, Phone, Eye, Edit, Search, Download, X ,ArrowUpFromLine} from "lucide-react"
 import DashboardHeader from "../../../components/ui/dashboardHeader"
 import SearchFilter from "../../../components/dashboard/search-filter"
 import styles from "./style.module.css"
+import Papa from 'papaparse'
+import { GoUpload } from "react-icons/go";
 
 
 export default function ViewLeads() {
@@ -189,6 +191,46 @@ export default function ViewLeads() {
     link.click()
     document.body.removeChild(link)
   }
+ const fileInputRef = useRef();
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click(); // Trigger file input when button is clicked
+  }
+
+  const handleImportCSV = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // ✅ Preview the parsed data if needed
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      console.log('Parsed Data Preview:', results.data);
+    },
+  });
+
+  // ✅ Prepare FormData
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch('/api/leads/uploadleads', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert(data.message); // Example: "10 leads imported"
+    } else {
+      alert(`Error: ${data.message}`);
+    }
+  } catch (err) {
+    console.error('CSV Import Error:', err);
+    alert('Something went wrong during CSV import');
+  }
+};
 
   const handleViewLead = (leadId) => {
     console.log("View lead:", leadId)
@@ -304,11 +346,32 @@ export default function ViewLeads() {
 
       {/* Actions */}
       <div className={styles.actions}>
+
+
+
+
+         <input
+        type="file"
+        accept=".csv"
+        ref={fileInputRef}
+        onChange={handleImportCSV}
+        style={{ display: 'none' }}
+      />
+
+      {/* Visible Import button only */}
+      <button onClick={handleButtonClick} className={styles.downloadButton}>
+        <GoUpload className={styles.downloadIcon} />
+        Upload
+      </button>
         <button onClick={downloadCSV} className={styles.downloadButton}>
           <Download className={styles.downloadIcon} />
-          Download Leads CSV
+          Download
         </button>
+
+
+       
       </div>
+      
 
       {/* Leads Table */}
       <div className={styles.tableContainer}>
