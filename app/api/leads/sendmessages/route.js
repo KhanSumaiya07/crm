@@ -16,9 +16,13 @@ export async function POST(req) {
   const leads = await Lead.find({ _id: { $in: leadIds } });
 
   for (const lead of leads) {
-    console.log("Sending to lead:", lead);
+  const templateData = {
+    ...lead.toObject(),
+    name: lead.fullname,
+    consultancy_name: 'Eduwire'
+  };
 
-    const finalMessage = renderTemplate(messageTemplate, lead);
+  const finalMessage = renderTemplate(messageTemplate, templateData);
 
     if (lead.email) {
       try {
