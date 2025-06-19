@@ -27,7 +27,7 @@ const followUpSchema = new mongoose.Schema({
     type: String,
     
   }
-}, { _id: false });
+}, { timestamps: true });
 
 const leadSchema = new mongoose.Schema({
   fullname: {

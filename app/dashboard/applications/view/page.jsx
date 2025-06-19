@@ -15,11 +15,15 @@ const ApplicationList = () => {
   });
 
   useEffect(() => {
-    // You can replace this with your actual API call
-    fetch('/api/applications/list')
-      .then(res => res.json())
-      .then(data => setApplications(data));
-  }, []);
+  fetch('/api/applications/list')
+    .then(res => res.json())
+    .then(data => {
+      console.log("Fetched applications:", data); // 🔍 Console log here
+      setApplications(data);
+    })
+    .catch(err => console.error("Error fetching applications:", err));
+}, []);
+
 
   const inputStyle = {
     padding: '8px',

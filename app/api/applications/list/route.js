@@ -5,7 +5,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const application = await Application.find(); // Fetch all leads
+    const application = await Application.find().populate("lead", "fullname email phone");
 
     return new Response(JSON.stringify(application), {
       status: 200,
@@ -15,7 +15,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error("Error fetching leads:", error);
+    console.error("Error fetching applications:", error);
 
     return new Response(
       JSON.stringify({ error: "Failed to fetch applications" }),

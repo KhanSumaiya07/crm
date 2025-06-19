@@ -1,12 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
+import EmojiPicker from 'emoji-picker-react';
 
 export default function SendMessageModal({ selectedLeads, onClose, onSend }) {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [file, setFile] = useState(null);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -16,7 +20,7 @@ export default function SendMessageModal({ selectedLeads, onClose, onSend }) {
         const data = await res.json();
         setTemplates(data);
       } catch (error) {
-        console.error("Failed to load templates", error);
+        console.error('Failed to load templates', error);
       }
     };
     loadTemplates();
@@ -44,82 +48,99 @@ export default function SendMessageModal({ selectedLeads, onClose, onSend }) {
 
   const handleSend = () => {
     if (!subject.trim() || !message.trim()) {
-      alert('Subject and Message required');
+      alert('Subject and message are required!');
       return;
     }
-
-    onSend({ subject, message });
+    onSend({ subject, message, file });
     onClose();
   };
 
+  const handleEmojiClick = (emojiData) => {
+    setMessage((prev) => prev + emojiData.emoji);
+  };
+
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '16px',
-      right: '16px',
-      zIndex: 9999,
-    }}>
-      <div
-        ref={modalRef}
-        style={{
-          width: '450px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          padding: '16px',
-          border: '1px solid #ccc',
-          boxShadow: '0 0 12px rgba(0,0,0,0.1)',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '600' }}>New Message</h2>
-          <button onClick={onClose} style={{ fontSize: '20px', color: '#666', border: 'none', background: 'none' }}>
-            &times;
-          </button>
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999,
+        width: '450px',
+        background: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0,0,0,0.15)',
+        overflow: 'hidden',
+        fontFamily: 'Arial, sans-serif',
+        border: '1px solid #e0e0e0',
+      }}
+      ref={modalRef}
+    >
+      <div style={{ background: '#f2f2f2', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #ddd' }}>
+        <span style={{ fontWeight: 'bold' }}>New Message</span>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+          <X size={20} />
+        </button>
+      </div>
+
+      <div style={{ padding: '12px' }}>
+        <div style={{ marginBottom: '10px', fontSize: '14px' }}>
+          <strong>To:</strong> <span style={{ color: '#555' }}>{selectedLeads.map((l) => l.email).join(', ')}</span>
         </div>
 
-        <div style={{ marginBottom: '12px', fontSize: '14px', color: '#666' }}>
-          <strong>To:</strong> {selectedLeads.map((l) => l.email).join(', ')}
+        <div style={{ marginBottom: '10px' }}>
+          <select
+            value={selectedTemplateId}
+            onChange={(e) => setSelectedTemplateId(e.target.value)}
+            style={{ width: '100%', padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}
+          >
+            <option value="">📑 Choose Template</option>
+            {templates.map((template) => (
+              <option key={template.id} value={template.id}>{template.title}</option>
+            ))}
+          </select>
         </div>
-
-        <select
-          value={selectedTemplateId}
-          onChange={(e) => setSelectedTemplateId(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
-        >
-          <option value="">Select a Template</option>
-          {templates.map((template) => (
-            <option key={template.id} value={template.id}>
-              {template.title}
-            </option>
-          ))}
-        </select>
 
         <input
           type="text"
           placeholder="Subject"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '8px' }}
+          style={{ width: '100%', padding: '8px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
         />
 
         <textarea
-          placeholder="Message"
+          placeholder="Write your message here..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          style={{ width: '100%', padding: '8px', height: '100px', marginBottom: '8px' }}
-        />
+          style={{ width: '100%', height: '120px', padding: '8px', border: '1px solid #ccc', borderRadius: '4px', resize: 'vertical' }}
+        ></textarea>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#666' }}>
-            Cancel
-          </button>
-          <button onClick={handleSend} style={{
-            background: '#2563eb',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            border: 'none',
-          }}>
+        {file && <div style={{ fontSize: '12px', color: '#444', marginTop: '6px' }}>📎 Attached: {file.name}</div>}
+
+        {showEmojiPicker && (
+          <div style={{ marginTop: '10px' }}>
+            <EmojiPicker onEmojiClick={handleEmojiClick} height={300} width={300} />
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #eee', padding: '8px 12px' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <label className="iconButton" title="Attach File">
+            📎
+            <input type="file" style={{ display: 'none' }} onChange={(e) => setFile(e.target.files[0])} />
+          </label>
+          <button title="Insert Emoji" className="iconButton" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>😊</button>
+          <button title="Insert Link" className="iconButton">🔗</button>
+          <button title="Formatting" className="iconButton">🅰️</button>
+        </div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={onClose} className="iconButton">🧹</button>
+          <button
+            onClick={handleSend}
+            style={{ backgroundColor: '#1a73e8', color: 'white', padding: '6px 16px', border: 'none', borderRadius: '4px', fontWeight: '500' }}
+          >
             Send
           </button>
         </div>

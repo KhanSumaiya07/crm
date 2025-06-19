@@ -13,12 +13,53 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   await connectDB();
-  const body = await req.json();
-  const updatedLead = await Lead.findByIdAndUpdate(params.id, body, {
-    new: true,
-  });
-  return new Response(JSON.stringify(updatedLead), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  try {
+    const body = await req.json();
+    console.log("Incoming PUT body", body);
+      console.log("params.id:", params.id) 
+
+    const updatedLead = await Lead.findByIdAndUpdate(params.id, body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedLead) {
+      return new Response("Lead not found", { status: 404 });
+    }
+
+    return new Response(JSON.stringify(updatedLead), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("Update Error:", err);
+    return new Response(JSON.stringify({ message: err.message }), { status: 500 });
+  }
 }
+
+
+export async function DELETE(req, { params }) {
+  try {
+    await connectDB();
+
+    const { id } = params;
+
+    const deletedLead = await Lead.findByIdAndDelete(id);
+
+    if (!deletedLead) {
+      return new Response(JSON.stringify({ error: "Lead not found" }), {
+        status: 404,
+      });
+    }
+
+    return new Response(JSON.stringify({ message: "Lead deleted successfully" }), {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Delete lead error:", error);
+    return new Response(JSON.stringify({ error: "Failed to delete lead" }), {
+      status: 500,
+    });
+  }
+}
+
