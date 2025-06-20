@@ -12,6 +12,7 @@ const ApplicationForm = () => {
   const [leadDetails, setLeadDetails] = useState({});
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
+    
     lead: '',
     referenceNo: '',
     passportDetails: {

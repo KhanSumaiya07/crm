@@ -261,6 +261,79 @@
   text-transform: capitalize;
 }
 
+
+.assignDropdownWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.assignDropdown {
+  position: absolute;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  width: 240px;
+  animation: dropdownFadeIn 0.3s ease-in-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.dropdownTitle {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.dropdownSelect {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  background-color: #f9f9f9;
+  transition: border 0.2s ease;
+}
+
+.dropdownSelect:focus {
+  border-color: #0070f3;
+  background-color: #fff;
+}
+
+.assignBtn {
+  width: 100%;
+  padding: 8px 0;
+  background-color: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.assignBtn:hover {
+  background-color: #0057c2;
+}
+
 .avatar {
   width: 2rem;
   height: 2rem;

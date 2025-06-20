@@ -89,7 +89,15 @@ const leadSchema = new mongoose.Schema({
     default: Date.now
   },
  
-  
+  assignedTo: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+},
+assignDate: {
+  type: Date,
+  default: Date.now
+},
+
   followUps: [followUpSchema], // 🆕 Added follow-up details here
   createdAt: {
     type: Date,

@@ -1,6 +1,5 @@
 import { connectDB } from "../../../lib/db";
 import Application from "../../../models/Application";
-import Lead from "../../../models/Lead";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req) {
@@ -13,6 +12,14 @@ export async function POST(req) {
 
 export async function GET() {
   await connectDB();
-  const apps = await Application.find().populate('lead');
+  const apps = await Application.find().populate({
+    path: 'lead',
+    select: 'fullname email phone assignedTo followUps', // ✅ only required fields
+    populate: {
+      path: 'assignedTo',
+      select: 'name'
+    }
+  });
+
   return new Response(JSON.stringify(apps), { status: 200 });
 }
