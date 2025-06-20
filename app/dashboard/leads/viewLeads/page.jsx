@@ -70,24 +70,27 @@ export default function ViewLeads() {
     }
   };
 
-   const sendMessages = async ({ subject, message }) => {
-    const res = await fetch('/api/leads/sendmessages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        leadIds: selectedLeads.map((l) => l._id),
-        subject,
-        messageTemplate: message,
-      }),
-    });
+ const sendMessages = async ({ subject, message }) => {
+  const res = await fetch('/api/leads/sendmessages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      leadIds: selectedLeads, // ✅ NOT .map((l) => l._id)
+      subject,
+      messageTemplate: message,
+    }),
+  });
 
-    if (res.ok) {
-      alert('Messages sent!');
-      setSelectedLeads([]);
-    } else {
-      alert('Failed to send');
-    }
-  };
+  if (res.ok) {
+    alert('Messages sent!');
+    setSelectedLeads([]);
+  } else {
+    const err = await res.json();
+    alert('❌ Failed to send: ' + err.error);
+  }
+};
+
+
 
   const handleBulkDelete = () => {
     if (confirm("Are you sure you want to delete selected leads?")) {
