@@ -282,13 +282,13 @@ const slecteddownloadCSV = () => {
                     </td>
                     <td className={styles.td}>
                       <div className={styles.contactCell}>
-                        <Phone className={styles.contactIcon} />
+                        
                         <span>{lead.phone || "N/A"}</span>
                       </div>
                     </td>
                     <td className={styles.td}>
                       <div className={styles.contactCell}>
-                        <Mail className={styles.contactIcon} />
+                       
                         <span>{lead.email || "N/A"}</span>
                       </div>
                     </td>
