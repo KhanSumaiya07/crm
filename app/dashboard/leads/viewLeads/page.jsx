@@ -22,10 +22,12 @@ import DashboardHeader from "../../../components/ui/dashboardHeader";
 import SearchFilter from "../../../components/dashboard/search-filter";
 import styles from "./style.module.css";
 import { GoUpload } from "react-icons/go";
+import SendMessageModal from "../../../components/SendMessageModal";
 
 export default function ViewLeads() {
   const router = useRouter();
   const [selectedLeads, setSelectedLeads] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const dispatch = useDispatch();
   const { leads, loading, error } = useSelector((state) => state.leads);
 
@@ -51,6 +53,8 @@ export default function ViewLeads() {
     }
   };
 
+ 
+
   const handleDelete = async (leadId) => {
     const confirmDelete = confirm("Are you sure you want to delete this lead?");
     if (!confirmDelete) return;
@@ -66,12 +70,131 @@ export default function ViewLeads() {
     }
   };
 
+   const sendMessages = async ({ subject, message }) => {
+    const res = await fetch('/api/leads/sendmessages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        leadIds: selectedLeads.map((l) => l._id),
+        subject,
+        messageTemplate: message,
+      }),
+    });
+
+    if (res.ok) {
+      alert('Messages sent!');
+      setSelectedLeads([]);
+    } else {
+      alert('Failed to send');
+    }
+  };
+
   const handleBulkDelete = () => {
     if (confirm("Are you sure you want to delete selected leads?")) {
       selectedLeads.forEach((id) => handleDelete(id));
       setSelectedLeads([]);
     }
   };
+
+
+ const downloadCSV = () => {
+  const headers = [
+    "Student Name",
+    "Mobile",
+    "Email",
+    "Interested Country",
+    "Status",
+    "Application Generated",
+    "Lead Date",
+    "Assign Date",
+  ];
+
+  const csvContent = [
+    headers.join(","),
+    ...filteredLeads.map((lead) => {
+      const followUp = lead.followUps?.[0] || {};
+      return [
+        `${lead.fullname || ""}`,
+        `${lead.phone || ""}`,
+        `${lead.email || ""}`,
+        `${lead.preferredCountry || lead.countryofresidence || ""}`,
+        `${followUp.status || ""}`,
+        `${lead.applicationGenerated ? "Generated" : "Not Generated"}`,
+        `${formatDate(lead.leaddate)}`,
+        `${formatDate(lead.assignDate) || "-"}`,
+      ].join(",");
+    }),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    `leads_${new Date().toISOString().split("T")[0]}.csv`
+  );
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+const slecteddownloadCSV = () => {
+  const headers = [
+    "Student Name",
+    "Mobile",
+    "Email",
+    "Interested Country",
+    "Status",
+    "Application Generated",
+    "Lead Date",
+    "Assign Date",
+  ];
+
+  // Filter only selected leads
+  const selectedLeadData = filteredLeads.filter((lead) =>
+    selectedLeads.includes(lead._id)
+  );
+
+  if (selectedLeadData.length === 0) {
+    alert("❌ No leads selected to download.");
+    return;
+  }
+
+  const csvContent = [
+    headers.join(","),
+    ...selectedLeadData.map((lead) => {
+      const followUp = lead.followUps?.[0] || {};
+      return [
+        `${lead.fullname || ""}`,
+        `${lead.phone || ""}`,
+        `${lead.email || ""}`,
+        `${lead.preferredCountry || lead.countryofresidence || ""}`,
+        `${followUp.status || ""}`,
+        `${lead.applicationGenerated ? "Generated" : "Not Generated"}`,
+        `${formatDate(lead.leaddate)}`,
+        `${formatDate(lead.assignDate) || "-"}`,
+      ].join(",");
+    }),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute(
+    "download",
+    `selected_leads_${new Date().toISOString().split("T")[0]}.csv`
+  );
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+
+  
 
   const handleViewLead = (id) => router.push(`/dashboard/leads/${id}/view`);
   const handleEditLead = (id) => router.push(`/dashboard/leads/${id}/edit`);
@@ -99,8 +222,8 @@ export default function ViewLeads() {
           
           <button className={styles.iconButton} onClick={handleBulkDelete}><Trash2 size={18} /></button>
           <span className={styles.divider}></span>
-          <button className={styles.iconButton}><Mail size={18} /></button>
-          <button className={styles.iconButton} ><Download size={18} /></button>
+          <button onClick={() => setShowModal(true)} className={styles.iconButton}><Mail size={18} /></button>
+          <button onClick={slecteddownloadCSV} className={styles.iconButton} ><Download size={18} /></button>
           <button className={styles.iconButton}><MoreVertical size={18} /></button>
         </div>
       )}
@@ -222,6 +345,13 @@ export default function ViewLeads() {
           </tbody>
         </table>
       </div>
+      {showModal && (
+              <SendMessageModal
+                selectedLeads={selectedLeads}
+                onClose={() => setShowModal(false)}
+                onSend={sendMessages}
+              />
+            )}
     </div>
   );
 }
