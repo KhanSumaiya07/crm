@@ -41,16 +41,14 @@ export default function EditLeadPage() {
     intake: "",
     score: "",
     budget: "",
-    followUps: [
-      {
-        leadType: "",
-        date: "",
-        time: "",
-        mode: "",
-        status: "New",
-        remark: "",
-      },
-    ],
+    followUps: [{
+      leadType: "",
+      date: "",
+      time: "",
+      mode: "",
+      status: "New",
+      remark: "",
+    }],
   })
 
   useEffect(() => {
@@ -106,7 +104,7 @@ export default function EditLeadPage() {
   }
 
   const validateFollowUpInfo = () => {
-    const followUp = formData.followUps[0]
+    const followUp = formData.followUps?.[0] || {}
     const requiredFields = ["leadType", "mode", "status", "remark"]
     return requiredFields.every((field) => followUp[field]?.trim())
   }
@@ -216,36 +214,48 @@ export default function EditLeadPage() {
     </InfoCard>
   )
 
-  const renderStep3 = () => (
-    <InfoCard title="Follow-up Information" icon={Phone} showEditButton={false}>
-      <div className={styles.formGridTwo}>
-        {["date", "time", "leadType", "mode", "status", "remark"].map((field) => (
-          <InputField
-            key={field}
-            label={field === "remark" ? "Remarks" : field.replace(/^\w/, (c) => c.toUpperCase())}
-            name={field}
-            type={field === "date" ? "date" : field === "time" ? "time" : field === "remark" ? "text" : "select"}
-            value={formData.followUps[0][field]}
-            onChange={(e) => {
-              const updated = [...formData.followUps]
-              updated[0][field] = e.target.value
-              setFormData({ ...formData, followUps: updated })
-            }}
-            required={["leadType", "mode", "status", "remark", "date"].includes(field)}
-            options={
-              field === "leadType"
-                ? ["Cold", "Completed", "Failed", "Future Lead", "Hot", "Medium", "Not Responding"].map((v) => ({ value: v, label: v }))
-                : field === "mode"
-                ? ["BBM", "Email", "Google Meet", "Meeting", "Phone", "Skype", "We Chat", "Whatsapp", "Zoom"].map((v) => ({ value: v, label: v }))
-                : field === "status"
-                ? ["New", "In Process", "Completed", "Future Lead", "Not responding", "Failed"].map((v) => ({ value: v, label: v }))
-                : undefined
-            }
-          />
-        ))}
-      </div>
-    </InfoCard>
-  )
+  const renderStep3 = () => {
+    const followUp = formData.followUps?.[0] || {
+      leadType: "",
+      date: "",
+      time: "",
+      mode: "",
+      status: "New",
+      remark: "",
+    }
+
+    return (
+      <InfoCard title="Follow-up Information" icon={Phone} showEditButton={false}>
+        <div className={styles.formGridTwo}>
+          {["date", "time", "leadType", "mode", "status", "remark"].map((field) => (
+            <InputField
+              key={field}
+              label={field === "remark" ? "Remarks" : field.replace(/^\w/, (c) => c.toUpperCase())}
+              name={field}
+              type={field === "date" ? "date" : field === "time" ? "time" : field === "remark" ? "text" : "select"}
+              value={followUp[field] || ""}
+              onChange={(e) => {
+                const updated = [...formData.followUps]
+                if (!updated[0]) updated[0] = {}
+                updated[0][field] = e.target.value
+                setFormData({ ...formData, followUps: updated })
+              }}
+              required={["leadType", "mode", "status", "remark", "date"].includes(field)}
+              options={
+                field === "leadType"
+                  ? ["Cold", "Completed", "Failed", "Future Lead", "Hot", "Medium", "Not Responding"].map((v) => ({ value: v, label: v }))
+                  : field === "mode"
+                    ? ["BBM", "Email", "Google Meet", "Meeting", "Phone", "Skype", "We Chat", "Whatsapp", "Zoom"].map((v) => ({ value: v, label: v }))
+                    : field === "status"
+                      ? ["New", "In Process", "Completed", "Future Lead", "Not responding", "Failed"].map((v) => ({ value: v, label: v }))
+                      : undefined
+              }
+            />
+          ))}
+        </div>
+      </InfoCard>
+    )
+  }
 
   return (
     <div className={styles.container}>

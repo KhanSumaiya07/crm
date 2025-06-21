@@ -18,10 +18,12 @@ export async function PUT(req, { params }) {
     console.log("Incoming PUT body", body);
       console.log("params.id:", params.id) 
 
-    const updatedLead = await Lead.findByIdAndUpdate(params.id, body, {
-      new: true,
-      runValidators: true,
-    });
+   const updatedLead = await Lead.findByIdAndUpdate(
+  params.id,
+  { $set: body }, // ✅ wrap in $set
+  { new: true, runValidators: true }
+);
+
 
     if (!updatedLead) {
       return new Response("Lead not found", { status: 404 });
