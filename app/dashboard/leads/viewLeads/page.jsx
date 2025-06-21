@@ -16,7 +16,7 @@ import {
   Archive,
   MoreVertical,
   UserRoundPen,
-   Shuffle
+  Shuffle
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchLeads } from "../../../../store/leadsSlice";
