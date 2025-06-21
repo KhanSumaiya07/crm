@@ -1,16 +1,6 @@
 // ViewLeads.jsx
 "use client";
 
-<<<<<<< HEAD
-import { useRouter } from 'next/navigation';
-import { useState, useEffect, useRef } from "react"
-import { Mail, Phone, Eye, Edit, Search, Download, X } from "lucide-react"
-import { useSelector, useDispatch } from 'react-redux'
-import { fetchLeads } from '../../../../store/leadsSlice'
-import DashboardHeader from "../../../components/ui/dashboardHeader"
-import SearchFilter from "../../../components/dashboard/search-filter"
-import styles from "./style.module.css"
-=======
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -35,7 +25,6 @@ import SearchFilter from "../../../components/dashboard/search-filter";
 import styles from "./style.module.css";
 import { GoUpload } from "react-icons/go";
 import SendMessageModal from "../../../components/SendMessageModal";
->>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
 export default function ViewLeads() {
   const router = useRouter();
@@ -232,59 +221,10 @@ useEffect(() => {
       "Assign Date",
     ];
 
-<<<<<<< HEAD
-const fileInputRef = useRef();
-
-  const handleButtonClick = () => {
-    fileInputRef.current.click(); // Trigger file input when button is clicked
-  }
-
-  const handleImportCSV = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // ✅ Preview the parsed data if needed
-  Papa.parse(file, {
-    header: true,
-    skipEmptyLines: true,
-    complete: function (results) {
-      console.log('Parsed Data Preview:', results.data);
-    },
-  });
-
-  // ✅ Prepare FormData
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-    const res = await fetch('/api/leads/uploadleads', {
-      method: 'POST',
-      body: formData,
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.message); // Example: "10 leads imported"
-    } else {
-      alert(`Error: ${data.message}`);
-    }
-  } catch (err) {
-    console.error('CSV Import Error:', err);
-    alert('Something went wrong during CSV import');
-  }
-};
-
-
-
- const handleViewLead = (leadId) => {
-  router.push(`/dashboard/leads/${leadId}/view`);
-};
-=======
     // Filter only selected leads
     const selectedLeadData = filteredLeads.filter((lead) =>
       selectedLeads.includes(lead._id)
     );
->>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
     if (selectedLeadData.length === 0) {
       alert("❌ No leads selected to download.");
@@ -385,43 +325,12 @@ const fileInputRef = useRef();
 </div>
 
 
-<<<<<<< HEAD
-           {/* Actions */}
-      <div className={styles.actions}>
-
-
-
-
-         <input
-        type="file"
-        accept=".csv"
-        ref={fileInputRef}
-        onChange={handleImportCSV}
-        style={{ display: 'none' }}
-      />
-
-      {/* Visible Import button only */}
-      <button onClick={handleButtonClick} className={styles.downloadButton}>
-        <GoUpload className={styles.downloadIcon} />
-        Upload
-      </button>
-        <button onClick={downloadCSV} className={styles.downloadButton}>
-          <Download className={styles.downloadIcon} />
-          Download
-        </button>
-
-
-       
-      </div>
-      
-=======
 
           <button onClick={slecteddownloadCSV} className={styles.iconButton}><Download size={18} /></button>
           <button onClick={handleBulkDelete} className={styles.iconButton}><Trash2 size={18} /></button>
           <button className={styles.iconButton}><MoreVertical size={18} /></button>
         </div>
       )}
->>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
       {/* Leads Table */}
       <div className={styles.tableContainer}>
