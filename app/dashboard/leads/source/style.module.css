@@ -1,0 +1,33 @@
+.container {
+  padding: 20px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.addButton {
+  background-color: green;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 4px;
+  border: none;
+}
+.tableContainer {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+.editButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}

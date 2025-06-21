@@ -1,12 +1,14 @@
 import { connectDB } from "../../../../lib/db";
 import Lead from "../../../../models/Lead";
+import User from "../../../../models/User"; 
 
 export async function GET() {
   try {
     await connectDB();
 
-    const leads = await Lead.find(); // Fetch all leads
-
+    const leads = await Lead.find()
+ .populate('assignedTo', 'name') // only name from User model
+  .populate('followUps');
     return new Response(JSON.stringify(leads), {
       status: 200,
       headers: {

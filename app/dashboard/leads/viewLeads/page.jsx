@@ -1,5 +1,7 @@
-"use client"
+// ViewLeads.jsx
+"use client";
 
+<<<<<<< HEAD
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from "react"
 import { Mail, Phone, Eye, Edit, Search, Download, X } from "lucide-react"
@@ -8,134 +10,173 @@ import { fetchLeads } from '../../../../store/leadsSlice'
 import DashboardHeader from "../../../components/ui/dashboardHeader"
 import SearchFilter from "../../../components/dashboard/search-filter"
 import styles from "./style.module.css"
+=======
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import {
+  Mail,
+  Phone,
+  Eye,
+  Edit,
+  Search,
+  Download,
+  X,
+  Trash2,
+  AlertTriangle,
+  Archive,
+  MoreVertical,
+  UserRoundPen,
+   Shuffle
+} from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchLeads } from "../../../../store/leadsSlice";
+import DashboardHeader from "../../../components/ui/dashboardHeader";
+import SearchFilter from "../../../components/dashboard/search-filter";
+import styles from "./style.module.css";
+import { GoUpload } from "react-icons/go";
+import SendMessageModal from "../../../components/SendMessageModal";
+>>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
 export default function ViewLeads() {
   const router = useRouter();
-  const [filters, setFilters] = useState({
-    interestedCountry: "",
-    counsellor: "",
-    leadType: "",
-     status: "",
-    sourceOfLeads: "",
-    applicationGenerated: "",
-    studentName: "",
-  })
-  const [activeFilters, setActiveFilters] = useState([])
+  const [selectedLeads, setSelectedLeads] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [counsellors, setCounsellors] = useState([]);
+  const [showAssignDropdown, setShowAssignDropdown] = useState(false);
+  const [selectedCounsellor, setSelectedCounsellor] = useState("");
 
-  // Redux state management
-  const dispatch = useDispatch()
-  const { leads, loading, error } = useSelector((state) => state.leads)
+  const dispatch = useDispatch();
+  const { leads, loading, error } = useSelector((state) => state.leads);
 
-  // Fetch leads from Redux
   useEffect(() => {
-    dispatch(fetchLeads())
-  }, [dispatch])
+    dispatch(fetchLeads());
+  }, [dispatch]);
+  useEffect(() => {
+    fetch("/api/counsellor/list")
+      .then((res) => res.json())
+      .then(setCounsellors);
+  }, []);
+
+
+  const dropdownRef = useRef();
+
+
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setShowAssignDropdown(false);
+    }
+  };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+  const assignToCounsellor = async () => {
+    if (!selectedCounsellor) return alert("Please select a counsellor");
+    const res = await fetch("/api/leads/assign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leadIds: selectedLeads,
+        counsellorId: selectedCounsellor,
+      }),
+    });
+
+    if (res.ok) {
+      alert("Leads assigned!");
+      setShowAssignModal(false);
+      dispatch(fetchLeads());
+      setSelectedLeads([]);
+    } else {
+      const err = await res.json();
+      alert("❌ Failed: " + err.error);
+    }
+  };
+
+  const handleRandomAssign = async () => {
+    const res = await fetch("/api/leads/random-assign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ leadIds: selectedLeads }),
+    });
+
+    if (res.ok) {
+      alert("Randomly assigned!");
+      dispatch(fetchLeads());
+      setSelectedLeads([]);
+    } else {
+      const err = await res.json();
+      alert("❌ Failed: " + err.error);
+    }
+  };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "-"
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-GB") // DD/MM/YYYY format
-  }
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB");
+  };
 
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
       case "new":
-        return styles.statusNew
+        return styles.statusNew;
       case "in process":
-        return styles.statusProgress
+        return styles.statusProgress;
       case "completed":
-        return styles.statusCompleted
+        return styles.statusCompleted;
       case "future lead":
-        return styles.statusReview
+        return styles.statusReview;
       case "not responding":
-        return styles.statusFollowup
+        return styles.statusFollowup;
       case "failed":
-        return styles.statusDefault
+        return styles.statusDefault;
       default:
-        return styles.statusDefault
+        return styles.statusDefault;
     }
-  }
+  };
 
-  const handleFilterChange = (filterName, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterName]: value,
-    }))
-  }
+  const handleDelete = async (leadId) => {
+    const confirmDelete = confirm("Are you sure you want to delete this lead?");
+    if (!confirmDelete) return;
 
-  const handleSearch = () => {
-    const newActiveFilters = []
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && value.trim() !== "") {
-        newActiveFilters.push({
-          key,
-          value,
-          label: getFilterLabel(key, value),
-        })
-      }
-    })
-    setActiveFilters(newActiveFilters)
-  }
-
-  const getFilterLabel = (key, value) => {
-    const labels = {
-      interestedCountry: "Country",
-      counsellor: "Counsellor",
-      leadType: "Lead Type",
-       status: 'status',
-      sourceOfLeads: "Source",
-      applicationGenerated: "App Generated",
-      studentName: "Student",
+    try {
+      const res = await fetch(`/api/leads/${leadId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete lead");
+      alert("Lead deleted successfully");
+      dispatch(fetchLeads());
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting lead");
     }
-    return `${labels[key]}: ${value}`
-  }
+  };
 
-  const removeFilter = (filterKey) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterKey]: "",
-    }))
+  const sendMessages = async ({ subject, message }) => {
+    const res = await fetch("/api/leads/sendmessages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        leadIds: selectedLeads, // ✅ NOT .map((l) => l._id)
+        subject,
+        messageTemplate: message,
+      }),
+    });
 
-    const newActiveFilters = activeFilters.filter((filter) => filter.key !== filterKey)
-    setActiveFilters(newActiveFilters)
-  }
+    if (res.ok) {
+      alert("Messages sent!");
+      setSelectedLeads([]);
+    } else {
+      const err = await res.json();
+      alert("❌ Failed to send: " + err.error);
+    }
+  };
 
-  const clearAllFilters = () => {
-    setFilters({
-      interestedCountry: "",
-      counsellor: "",
-      leadType: "",
-       status: "",
-      sourceOfLeads: "",
-      applicationGenerated: "",
-      studentName: "",
-    })
-    setActiveFilters([])
-  }
-
-  const filteredLeads = leads?.filter((lead) => {
-    if (activeFilters.length === 0) return true
-
-    const leadType = lead.followUps?.[0]?.leadType || ""
-    const interestedCountry = lead.preferredCountry || lead.countryofresidence || ""
-    const sourceOfLeads = lead.sourceOfLeads || ""
-
-    const activeFilterMap = {}
-    activeFilters.forEach((filter) => {
-      activeFilterMap[filter.key] = filter.value
-    })
-
-    return (
-      (!activeFilterMap.interestedCountry ||
-        interestedCountry.toLowerCase().includes(activeFilterMap.interestedCountry.toLowerCase())) &&
-      (!activeFilterMap.leadType || 
-        leadType.toLowerCase().includes(activeFilterMap.leadType.toLowerCase())) &&
-      (!activeFilterMap.sourceOfLeads ||
-        sourceOfLeads.toLowerCase().includes(activeFilterMap.sourceOfLeads.toLowerCase())) &&
-      (!activeFilterMap.studentName || 
-        lead.fullname?.toLowerCase().includes(activeFilterMap.studentName.toLowerCase()))
-    )
-  }) || []
+  const handleBulkDelete = () => {
+    if (confirm("Are you sure you want to delete selected leads?")) {
+      selectedLeads.forEach((id) => handleDelete(id));
+      setSelectedLeads([]);
+    }
+  };
 
   const downloadCSV = () => {
     const headers = [
@@ -147,36 +188,51 @@ export default function ViewLeads() {
       "Application Generated",
       "Lead Date",
       "Assign Date",
-    ]
+    ];
 
     const csvContent = [
       headers.join(","),
       ...filteredLeads.map((lead) => {
-        const followUp = lead.followUps?.[0] || {}
+        const followUp = lead.followUps?.[0] || {};
         return [
-          `"${lead.fullname || ""}"`,
-          `"${lead.phone || ""}"`,
-          `"${lead.email || ""}"`,
-          `"${lead.preferredCountry || lead.countryofresidence || ""}"`,
-          `"${followUp.status || ""}"`,
-          `"${lead.applicationGenerated ? "Generated" : "Not Generated"}"`,
-          `"${formatDate(lead.leaddate)}"`,
-          `"${formatDate(lead.assignDate) || "-"}"`,
-        ].join(",")
+          `${lead.fullname || ""}`,
+          `${lead.phone || ""}`,
+          `${lead.email || ""}`,
+          `${lead.preferredCountry || lead.countryofresidence || ""}`,
+          `${followUp.status || ""}`,
+          `${lead.applicationGenerated ? "Generated" : "Not Generated"}`,
+          `${formatDate(lead.leaddate)}`,
+          `${formatDate(lead.assignDate) || "-"}`,
+        ].join(",");
       }),
-    ].join("\n")
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-    const link = document.createElement("a")
-    const url = URL.createObjectURL(blob)
-    link.setAttribute("href", url)
-    link.setAttribute("download", `leads_${new Date().toISOString().split("T")[0]}.csv`)
-    link.style.visibility = "hidden"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `leads_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const slecteddownloadCSV = () => {
+    const headers = [
+      "Student Name",
+      "Mobile",
+      "Email",
+      "Interested Country",
+      "Status",
+      "Application Generated",
+      "Lead Date",
+      "Assign Date",
+    ];
 
+<<<<<<< HEAD
 const fileInputRef = useRef();
 
   const handleButtonClick = () => {
@@ -223,135 +279,113 @@ const fileInputRef = useRef();
  const handleViewLead = (leadId) => {
   router.push(`/dashboard/leads/${leadId}/view`);
 };
+=======
+    // Filter only selected leads
+    const selectedLeadData = filteredLeads.filter((lead) =>
+      selectedLeads.includes(lead._id)
+    );
+>>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
-const handleEditLead = (leadId) => {
-  router.push(`/dashboard/leads/${leadId}/edit`);
-};
+    if (selectedLeadData.length === 0) {
+      alert("❌ No leads selected to download.");
+      return;
+    }
 
+    const csvContent = [
+      headers.join(","),
+      ...selectedLeadData.map((lead) => {
+        const followUp = lead.followUps?.[0] || {};
+        return [
+          `${lead.fullname || ""}`,
+          `${lead.phone || ""}`,
+          `${lead.email || ""}`,
+          `${lead.preferredCountry || lead.countryofresidence || ""}`,
+          `${followUp.status || ""}`,
+          `${lead.applicationGenerated ? "Generated" : "Not Generated"}`,
+          `${formatDate(lead.leaddate)}`,
+          `${formatDate(lead.assignDate) || "-"}`,
+        ].join(",");
+      }),
+    ].join("\n");
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <DashboardHeader title="View Leads" subtitle="Manage and track all student leads" />
-        <div className={styles.loading}>Loading leads...</div>
-      </div>
-    )
-  }
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `selected_leads_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <DashboardHeader title="View Leads" subtitle="Manage and track all student leads" />
-        <div className={styles.error}>Error loading leads: {error}</div>
-      </div>
-    )
-  }
+  const handleViewLead = (id) => router.push(`/dashboard/leads/${id}/view`);
+  const handleEditLead = (id) => router.push(`/dashboard/leads/${id}/edit`);
+
+  const filteredLeads = leads || [];
 
   return (
     <div className={styles.container}>
-      <DashboardHeader title="View Leads" subtitle="Manage and track all student leads" />
+      <DashboardHeader
+        title="View Leads"
+        subtitle="Manage and track all student leads"
+      />
 
-    {/* Search Filters */}
-<div className={styles.searchContainer}>
-  <div className={styles.filtersRow}>
-    <SearchFilter
-      type="select"
-      placeholder="Interested Country"
-      value={filters.interestedCountry}
-      onChange={(value) => handleFilterChange("interestedCountry", value)}
-      options={[
-        { value: "Canada", label: "Canada" },
-        { value: "Australia", label: "Australia" },
-        { value: "UK", label: "UK" },
-        { value: "USA", label: "USA" },
-        { value: "Germany", label: "Germany" },
-        { value: "New Zealand", label: "New Zealand" },
-        { value: "India", label: "India" },
-      ]}
-    />
-    <SearchFilter
-      type="select"
-      placeholder="Lead Type"
-      value={filters.leadType}
-      onChange={(value) => handleFilterChange("leadType", value)}
-      options={[
-        { value: "Cold", label: "Cold" },
-        { value: "Completed", label: "Completed" },
-        { value: "Failed", label: "Failed" },
-        { value: "Future Lead", label: "Future Lead" },
-        { value: "Hot", label: "Hot" },
-        { value: "Medium", label: "Medium" },
-        { value: "Not Responding", label: "Not Responding" },
-      ]}
-    />
-    <SearchFilter
-      type="select"
-      placeholder="Source of Leads"
-      value={filters.sourceOfLeads}
-      onChange={(value) => handleFilterChange("sourceOfLeads", value)}
-      options={[
-        { value: "App Lead", label: "App Lead" },
-        { value: "Associate", label: "Associate" },
-        { value: "Calling", label: "Calling" },
-        { value: "Dubai Team-Faizan", label: "Dubai Team-Faizan" },
-        { value: "Dubai Team-Shilpa", label: "Dubai Team-Shilpa" },
-        { value: "FB Ads", label: "FB Ads" },
-        { value: "Message", label: "Message" },
-        { value: "Others", label: "Others" },
-        { value: "Reference", label: "Reference" },
-        { value: "Seminar", label: "Seminar" },
-        { value: "Social Media", label: "Social Media" },
-        { value: "Walk In", label: "Walk In" },
-        { value: "Website", label: "Website" },
-      ]}
-    />
-    {/* ✅ New Status Filter */}
-    <SearchFilter
-      type="select"
-      placeholder="Status"
-      value={filters.status}
-      onChange={(value) => handleFilterChange("status", value)}
-      options={[
-        { value: "Open", label: "Open" },
-        { value: "In Progress", label: "In Progress" },
-        { value: "Closed", label: "Closed" },
-        { value: "Pending", label: "Pending" },
-      ]}
-    />
-    {/* ✅ Student Name Text Search */}
-    <SearchFilter
-      type="text"
-      placeholder="Student Name"
-      value={filters.studentName}
-      onChange={(value) => handleFilterChange("studentName", value)}
-    />
-  </div>
-
-  <div className={styles.searchRow}>
-    <button onClick={handleSearch} className={styles.searchButton}>
-      <Search className={styles.searchIcon} />
-      Search
-    </button>
-  </div>
-
-  {activeFilters.length > 0 && (
-    <div className={styles.activeFilters}>
-      {activeFilters.map((filter) => (
-        <div key={filter.key} className={styles.filterTag}>
-          <span>{filter.label}</span>
-          <button onClick={() => removeFilter(filter.key)} className={styles.removeFilter}>
-            <X className={styles.removeIcon} />
+      {/* Toolbar like Gmail */}
+      {selectedLeads.length > 0 && (
+        <div className={styles.bulkActionBar}>
+          <input
+            type="checkbox"
+            checked={selectedLeads.length === filteredLeads.length}
+            onChange={(e) =>
+              setSelectedLeads(
+                e.target.checked ? filteredLeads.map((l) => l._id) : []
+              )
+            }
+          />
+          <button className={styles.iconButton} onClick={() => setShowModal(true)}>
+            <Mail size={18} />
           </button>
-        </div>
-      ))}
-      <button onClick={clearAllFilters} className={styles.clearAll}>
-        Clear All
+          <button className={styles.iconButton} onClick={handleRandomAssign}>
+            <Shuffle size={18} />
+          </button>
+
+  <div ref={dropdownRef} className={styles.assignDropdownWrapper}>
+  <button
+    onClick={() => setShowAssignDropdown(!showAssignDropdown)}
+    className={styles.iconButton}
+    title="Assign Leads"
+  >
+    <UserRoundPen size={18} />
+  </button>
+
+  {showAssignDropdown && (
+    <div className={styles.assignDropdown}>
+      <h4 className={styles.dropdownTitle}>Assign to Counsellor</h4>
+      <select
+        value={selectedCounsellor}
+        onChange={(e) => setSelectedCounsellor(e.target.value)}
+        className={styles.dropdownSelect}
+      >
+        <option value="">-- Select Counsellor --</option>
+        {counsellors.map((c) => (
+          <option key={c._id} value={c._id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+      <button className={styles.assignBtn} onClick={assignToCounsellor}>
+        ✅ Assign
       </button>
     </div>
   )}
 </div>
 
 
+<<<<<<< HEAD
            {/* Actions */}
       <div className={styles.actions}>
 
@@ -380,19 +414,29 @@ const handleEditLead = (leadId) => {
        
       </div>
       
+=======
+
+          <button onClick={slecteddownloadCSV} className={styles.iconButton}><Download size={18} /></button>
+          <button onClick={handleBulkDelete} className={styles.iconButton}><Trash2 size={18} /></button>
+          <button className={styles.iconButton}><MoreVertical size={18} /></button>
+        </div>
+      )}
+>>>>>>> 63b04068246e2c0b5ef866f1ed72decb6482b8a2
 
       {/* Leads Table */}
       <div className={styles.tableContainer}>
         <table className={styles.table}>
           <thead className={styles.tableHeader}>
             <tr>
+              <th></th>
               <th className={styles.th}>Student Name</th>
               <th className={styles.th}>Mobile</th>
               <th className={styles.th}>Email</th>
               <th className={styles.th}>Interested Country</th>
+              <th className={styles.th}>Assign To</th>
               <th className={styles.th}>Status</th>
-              <th className={styles.th}>Application Generated</th>
-              <th className={styles.th}>Lead Date</th>
+              
+              
               <th className={styles.th}>Assign Date</th>
               <th className={styles.th}>Actions</th>
             </tr>
@@ -400,50 +444,72 @@ const handleEditLead = (leadId) => {
           <tbody>
             {filteredLeads.length > 0 ? (
               filteredLeads.map((lead, index) => {
-                const followUp = lead.followUps?.[0] || {}
+                const followUp = lead.followUps?.[0] || {};
                 return (
-                  <tr key={lead._id} className={index % 2 === 0 ? styles.evenRow : styles.oddRow}>
+                  <tr
+                    key={lead._id}
+                    className={index % 2 === 0 ? styles.evenRow : styles.oddRow}
+                  >
+                    <td>
+                      <div className={styles.checkboxWrapper}>
+                        <input
+                          type="checkbox"
+                          className={styles.customCheckbox}
+                          checked={selectedLeads.includes(lead._id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedLeads([...selectedLeads, lead._id]);
+                            } else {
+                              setSelectedLeads(
+                                selectedLeads.filter((id) => id !== lead._id)
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    </td>
                     <td className={styles.td}>
                       <div className={styles.nameCell}>
-                        <span className={styles.name}>{lead.fullname || "N/A"}</span>
+                        <span className={styles.name}>
+                          {lead.fullname || "N/A"}
+                        </span>
                       </div>
                     </td>
                     <td className={styles.td}>
                       <div className={styles.contactCell}>
-                        <Phone className={styles.contactIcon} />
                         <span>{lead.phone || "N/A"}</span>
                       </div>
                     </td>
                     <td className={styles.td}>
                       <div className={styles.contactCell}>
-                        <Mail className={styles.contactIcon} />
                         <span>{lead.email || "N/A"}</span>
                       </div>
                     </td>
                     <td className={styles.td}>
                       <span className={styles.country}>
-                        {lead.preferredCountry || lead.countryofresidence || "N/A"}
+                        {lead.preferredCountry ||
+                          lead.countryofresidence ||
+                          "N/A"}
                       </span>
                     </td>
+                    
                     <td className={styles.td}>
-                      <span className={`${styles.statusBadge} ${getStatusClass(followUp.status)}`}>
-                        {followUp.status || "N/A"}
-                      </span>
+                      <span>{lead.assignedTo?.name || "N/A"}</span>
                     </td>
                     <td className={styles.td}>
                       <span
-                        className={`${styles.applicationBadge} ${
-                          lead.applicationGenerated ? styles.generated : styles.notGenerated
-                        }`}
+                        className={`${styles.statusBadge} ${getStatusClass(
+                          followUp.status
+                        )}`}
                       >
-                        {lead.applicationGenerated ? "Generated" : "Not Generated"}
+                        {followUp.status || "N/A"}
                       </span>
                     </td>
+                 
                     <td className={styles.td}>
-                      <span className={styles.date}>{formatDate(lead.leaddate)}</span>
-                    </td>
-                    <td className={styles.td}>
-                      <span className={styles.date}>{formatDate(lead.assignDate) || "-"}</span>
+                      <span className={styles.date}>
+                        {formatDate(lead.assignDate) || "-"}
+                      </span>
                     </td>
                     <td className={styles.td}>
                       <div className={styles.actionButtons}>
@@ -461,33 +527,57 @@ const handleEditLead = (leadId) => {
                         >
                           <Edit className={styles.actionIcon} />
                         </button>
+                        <button
+                          className={styles.actionButton}
+                          onClick={() => handleDelete(lead._id)}
+                        >
+                          <Trash2 className={styles.actionIcon} />
+                        </button>
                       </div>
                     </td>
                   </tr>
-                )
+                );
               })
             ) : (
               <tr>
-                <td colSpan={9} className={styles.noResults}>
-                  No leads found matching your criteria
+                <td colSpan={10} className={styles.noResults}>
+                  No leads found
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+      {showAssignModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalBox}>
+            <h3>Select Counsellor to Assign</h3>
+            <select
+              value={selectedCounsellor}
+              onChange={(e) => setSelectedCounsellor(e.target.value)}
+            >
+              <option value="">-- Select --</option>
+              {counsellors.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <div className={styles.modalActions}>
+              <button onClick={assignToCounsellor}>Assign</button>
+              <button onClick={() => setShowAssignModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Table Footer */}
-      <div className={styles.tableFooter}>
-        <div className={styles.resultsInfo}>
-          Showing {filteredLeads.length} of {leads?.length || 0} leads
-        </div>
-        <div className={styles.pagination}>
-          <button className={styles.paginationButton}>Previous</button>
-          <span className={styles.pageInfo}>Page 1 of 1</span>
-          <button className={styles.paginationButton}>Next</button>
-        </div>
-      </div>
+      {showModal && (
+        <SendMessageModal
+          selectedLeads={selectedLeads}
+          onClose={() => setShowModal(false)}
+          onSend={sendMessages}
+        />
+      )}
     </div>
-  )
+  );
 }

@@ -20,24 +20,20 @@ const AddLead = () => {
 
   const [formData, setFormData] = useState({
     fullname: "",
-    DOB: "",
-    gender: "",
     email: "",
     phone: "",
+    DOB: "",
+    gender: "",
     countryofresidence: "",
-    highestQualification: "",
-    passoutYear: "",
-    academicScore: "",
-    sourceOfLeads: "", // New field
-
-    // Study Preferences
-    preferredCountry: "",
-    preferredCourse: "",
+    preferencecountry: "",
+    prefferredcourse: "",
     intake: "",
-    ieltsScore: "",
+    percentage: "",
+    qualification: "",
+    score: "",
     budget: "",
-
-    // Follow-up Info
+    passOutyear: "",
+    editRequest: "",
     followUps: [
       {
         leadType: "",
@@ -60,20 +56,20 @@ const AddLead = () => {
 
   const validatePersonalInformation = () => {
     const requiredFields = ["fullname", "phone"]
-    const missingFields = requiredFields.filter((field) => !formData[field].trim())
+    const missingFields = requiredFields.filter((field) => !(formData[field] || "").trim())
     return missingFields.length === 0
   }
 
   const validateStudyPreferences = () => {
-    const requiredFields = ["preferredCountry"]
-    const missingFields = requiredFields.filter((field) => !formData[field].trim())
+    const requiredFields = ["preferencecountry"]
+    const missingFields = requiredFields.filter((field) => !(formData[field] || "").trim())
     return missingFields.length === 0
   }
 
   const validateFollowUpInfo = () => {
     const followUp = formData.followUps[0]
     const requiredFields = ["leadType", "mode", "status", "remark"]
-    const missingFields = requiredFields.filter((field) => !followUp[field].trim())
+    const missingFields = requiredFields.filter((field) => !(followUp[field] || "").trim())
     return missingFields.length === 0
   }
 
@@ -100,16 +96,10 @@ const AddLead = () => {
 
   const handleStepClick = (stepId) => {
     if (stepId > currentStep) {
-      // Validate current step before moving forward
       let isValid = true
-
-      if (currentStep === 1) {
-        isValid = validatePersonalInformation()
-      } else if (currentStep === 2) {
-        isValid = validateStudyPreferences()
-      } else if (currentStep === 3) {
-        isValid = validateFollowUpInfo()
-      }
+      if (currentStep === 1) isValid = validatePersonalInformation()
+      else if (currentStep === 2) isValid = validateStudyPreferences()
+      else if (currentStep === 3) isValid = validateFollowUpInfo()
 
       if (!isValid) {
         setShowValidationModal(true)
@@ -132,8 +122,6 @@ const AddLead = () => {
         return
       }
 
-      console.log("Submit Lead button clicked - proceeding with submission")
-
       try {
         const res = await fetch("/api/leads/create", {
           method: "POST",
@@ -142,27 +130,24 @@ const AddLead = () => {
         })
 
         const result = await res.json()
-        console.log("API Response:", result)
-
         if (res.ok) {
           alert("Lead added successfully")
-          // Reset form
           setFormData({
             fullname: "",
-            DOB: "",
-            gender: "",
             email: "",
             phone: "",
+            DOB: "",
+            gender: "",
             countryofresidence: "",
-            highestQualification: "",
-            passoutYear: "",
-            academicScore: "",
-            sourceOfLeads: "",
-            preferredCountry: "",
-            preferredCourse: "",
+            preferencecountry: "",
+            prefferredcourse: "",
             intake: "",
-            ieltsScore: "",
+            percentage: "",
+            qualification: "",
+            score: "",
             budget: "",
+            passOutyear: "",
+            editRequest: "",
             followUps: [
               {
                 leadType: "",
@@ -189,19 +174,11 @@ const AddLead = () => {
     <>
       <InfoCard title="Personal Information" icon={User} showEditButton={false}>
         <div className={styles.formGrid}>
-          <InputField
-            label="Full Name"
-            placeholder="Enter full name"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            required={true}
-          />
+          <InputField label="Full Name" name="fullname" value={formData.fullname} onChange={handleChange} required />
           <InputField label="Date of Birth" name="DOB" type="date" value={formData.DOB} onChange={handleChange} />
           <InputField
             label="Gender"
             name="gender"
-            placeholder="Select gender"
             type="select"
             value={formData.gender}
             onChange={handleChange}
@@ -216,26 +193,11 @@ const AddLead = () => {
 
       <InfoCard title="Contact Information" icon={MapPin} showEditButton={false}>
         <div className={styles.formGrid}>
-          <InputField
-            label="Email"
-            name="email"
-            placeholder="Enter email address"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <InputField
-            label="Phone Number"
-            name="phone"
-            placeholder="Enter phone number"
-            value={formData.phone}
-            onChange={handleChange}
-            required={true}
-          />
+          <InputField label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
+          <InputField label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} required />
           <InputField
             label="Country of Residence"
             name="countryofresidence"
-            placeholder="Enter country of residence"
             value={formData.countryofresidence}
             onChange={handleChange}
           />
@@ -246,10 +208,9 @@ const AddLead = () => {
         <div className={styles.formGrid}>
           <InputField
             label="Highest Qualification"
-            name="highestQualification"
+            name="qualification"
             type="select"
-            value={formData.highestQualification}
-            placeholder="Select qualification"
+            value={formData.qualification}
             onChange={handleChange}
             options={[
               { value: "12th", label: "12th" },
@@ -261,47 +222,16 @@ const AddLead = () => {
           />
           <InputField
             label="Pass-out Year"
-            name="passoutYear"
-            placeholder="e.g. 2023"
+            name="passOutyear"
             type="number"
-            value={formData.passoutYear}
+            value={formData.passOutyear}
             onChange={handleChange}
           />
           <InputField
             label="Percentage / CGPA"
-            name="academicScore"
-            placeholder="e.g. 82.5% or 8.2 CGPA"
-            value={formData.academicScore}
+            name="percentage"
+            value={formData.percentage}
             onChange={handleChange}
-          />
-        </div>
-      </InfoCard>
-
-      <InfoCard title="Source Information" icon={User} showEditButton={false}>
-        <div className={styles.formGrid}>
-          <InputField
-            label="Source of Leads"
-            name="sourceOfLeads"
-            type="select"
-            value={formData.sourceOfLeads}
-            placeholder="Select Source"
-            onChange={handleChange}
-            required={true}
-            options={[
-              { value: "App Lead", label: "App Lead" },
-              { value: "Associate", label: "Associate" },
-              { value: "Calling", label: "Calling" },
-              { value: "Dubai Team-Faizan", label: "Dubai Team-Faizan" },
-              { value: "Dubai Team-Shilpa", label: "Dubai Team-Shilpa" },
-              { value: "FB Ads", label: "FB Ads" },
-              { value: "Message", label: "Message" },
-              { value: "Others", label: "Others" },
-              { value: "Reference", label: "Reference" },
-              { value: "Seminar", label: "Seminar" },
-              { value: "Social Media", label: "Social Media" },
-              { value: "Walk In", label: "Walk In" },
-              { value: "Website", label: "Website" },
-            ]}
           />
         </div>
       </InfoCard>
@@ -313,40 +243,20 @@ const AddLead = () => {
       <div className={styles.formGrid}>
         <InputField
           label="Preferred Country"
-          placeholder="Enter preferred country"
-          name="preferredCountry"
-          value={formData.preferredCountry}
+          name="preferencecountry"
+          value={formData.preferencecountry}
           onChange={handleChange}
-          required={true}
+          required
         />
         <InputField
           label="Preferred Course"
-          placeholder="Enter preferred course"
-          name="preferredCourse"
-          value={formData.preferredCourse}
+          name="prefferredcourse"
+          value={formData.prefferredcourse}
           onChange={handleChange}
         />
-        <InputField
-          label="Intake"
-          name="intake"
-          placeholder="Enter intake period"
-          value={formData.intake}
-          onChange={handleChange}
-        />
-        <InputField
-          label="IELTS/TOEFL Score"
-          name="ieltsScore"
-          placeholder="Enter test score"
-          value={formData.ieltsScore}
-          onChange={handleChange}
-        />
-        <InputField
-          label="Budget"
-          name="budget"
-          placeholder="Budget (in ₹ / USD)"
-          value={formData.budget}
-          onChange={handleChange}
-        />
+        <InputField label="Intake" name="intake" value={formData.intake} onChange={handleChange} />
+        <InputField label="IELTS/TOEFL Score" name="score" value={formData.score} onChange={handleChange} />
+        <InputField label="Budget" name="budget" value={formData.budget} onChange={handleChange} />
       </div>
     </InfoCard>
   )
@@ -364,9 +274,7 @@ const AddLead = () => {
             newFollowUps[0].date = e.target.value
             setFormData({ ...formData, followUps: newFollowUps })
           }}
-          required={true}
         />
-
         <InputField
           label="Follow-up Time"
           name="time"
@@ -378,13 +286,10 @@ const AddLead = () => {
             setFormData({ ...formData, followUps: newFollowUps })
           }}
         />
-
         <InputField
           label="Lead Type"
-          required={true}
           name="leadType"
           type="select"
-          placeholder="Select Lead Type"
           value={formData.followUps[0].leadType}
           onChange={(e) => {
             const newFollowUps = [...formData.followUps]
@@ -401,13 +306,10 @@ const AddLead = () => {
             { value: "Not Responding", label: "Not Responding" },
           ]}
         />
-
         <InputField
-          label="Follow Up Mode"
+          label="Follow-up Mode"
           name="mode"
-          required={true}
           type="select"
-          placeholder="Select Mode"
           value={formData.followUps[0].mode}
           onChange={(e) => {
             const newFollowUps = [...formData.followUps]
@@ -426,13 +328,10 @@ const AddLead = () => {
             { value: "Zoom", label: "Zoom" },
           ]}
         />
-
         <InputField
           label="Status"
           name="status"
           type="select"
-          required={true}
-          placeholder="Select Status"
           value={formData.followUps[0].status}
           onChange={(e) => {
             const newFollowUps = [...formData.followUps]
@@ -448,72 +347,51 @@ const AddLead = () => {
             { value: "Failed", label: "Failed" },
           ]}
         />
-
         <InputField
           label="Remarks"
           name="remark"
-          placeholder="Enter any additional remarks"
           value={formData.followUps[0].remark}
           onChange={(e) => {
             const newFollowUps = [...formData.followUps]
             newFollowUps[0].remark = e.target.value
             setFormData({ ...formData, followUps: newFollowUps })
           }}
-          required={true}
         />
       </div>
     </InfoCard>
   )
 
-  const getCurrentStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return renderStep1()
-      case 2:
-        return renderStep2()
-      case 3:
-        return renderStep3()
-      default:
-        return null
-    }
-  }
-
   return (
     <div className={styles.container}>
       <DashboardHeader title="Add Lead" subtitle="Enter student info to create a new lead." />
-
-    <div className={styles.addLeadPage}>
+      <div className={styles.addLeadPage}>
         <StepProgress
-        steps={steps.map((step, index) => ({
-          ...step,
-          status: index + 1 < currentStep ? "complete" : index + 1 === currentStep ? "current" : "pending",
-        }))}
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-      />
-
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className={styles.content}>{getCurrentStepContent()}</div>
-
-        <div className={styles.navigation}>
-          <button type="button" onClick={handleBack} disabled={currentStep === 1} className={styles.buttonSecondary}>
-            Back
-          </button>
-
-          {currentStep < steps.length ? (
-            <button type="button" onClick={handleNext} className={styles.buttonPrimary}>
-              Next
+          steps={steps.map((step, index) => ({
+            ...step,
+            status: index + 1 < currentStep ? "complete" : index + 1 === currentStep ? "current" : "pending",
+          }))}
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+        />
+        <form onSubmit={(e) => e.preventDefault()}>
+          <div className={styles.content}>{[renderStep1, renderStep2, renderStep3][currentStep - 1]()}</div>
+          <div className={styles.navigation}>
+            <button type="button" onClick={handleBack} disabled={currentStep === 1} className={styles.buttonSecondary}>
+              Back
             </button>
-          ) : (
-            <button type="button" onClick={handleFinalSubmit} className={styles.buttonPrimary}>
-              Submit Lead
-            </button>
-          )}
-        </div>
-      </form>
-
-      <ValidationModal isOpen={showValidationModal} onClose={() => setShowValidationModal(false)} />
-    </div>
+            {currentStep < steps.length ? (
+              <button type="button" onClick={handleNext} className={styles.buttonPrimary}>
+                Next
+              </button>
+            ) : (
+              <button type="button" onClick={handleFinalSubmit} className={styles.buttonPrimary}>
+                Submit Lead
+              </button>
+            )}
+          </div>
+        </form>
+        <ValidationModal isOpen={showValidationModal} onClose={() => setShowValidationModal(false)} />
+      </div>
     </div>
   )
 }

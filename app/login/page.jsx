@@ -123,7 +123,7 @@ export default function LoginForm() {
 
                             <button type="submit" className={styles.submitButton}>
                                 Login
-                                <ArrowRight size={16} />
+                                {/* <ArrowRight size={16} /> */}
                             </button>
                         </form>
 

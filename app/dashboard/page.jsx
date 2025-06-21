@@ -1,101 +1,133 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { UsersIcon, CheckCircleIcon, AlertCircleIcon, XCircleIcon, FileTextIcon, GiftIcon, CreditCardIcon, StampIcon, BarChart3Icon, PieChartIcon, ListIcon, MapPinIcon, TrendingUpIcon, CalendarIcon, } from "lucide-react"
-import { StatCard } from "../components/ui/stat-card"
-import { SectionHeader } from "../components/ui/section-header"
-import { ChartCard } from "../components/ui/chart-card"
-import { DataTable } from "../components/ui/data-table"
-import { Button } from "../components/ui/button"
-import { DateRangePicker } from "../components/ui/date-range-picker"
+import { useState } from "react";
+import {
+  UsersIcon,
+  CheckCircleIcon,
+  AlertCircleIcon,
+  XCircleIcon,
+  FileTextIcon,
+  GiftIcon,
+  CreditCardIcon,
+  StampIcon,
+  BarChart3Icon,
+  PieChartIcon,
+  ListIcon,
+  MapPinIcon,
+  TrendingUpIcon,
+  CalendarIcon,
+} from "lucide-react";
+import { StatCard } from "../components/ui/stat-card";
+import { SectionHeader } from "../components/ui/section-header";
+import { ChartCard } from "../components/ui/chart-card";
+import { DataTable } from "../components/ui/data-table";
+import { Button } from "../components/ui/button";
+import { DateRangePicker } from "../components/ui/date-range-picker";
 // import { IntakeDropdown } from "../components/dashboard/intake-dropdown"
-import { YearDropdown } from "../components/dashboard/year-dropdown"
-import { CountriesDropdown } from "../components/dashboard/countries-dropdown"
-import { IntakeDropdown } from "../components/dashboard/intake-dropdown"
-import DashboardHeader from "../components/ui/dashboardHeader"
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { fetchLeads } from '../../store/leadsSlice';
-import "./dashboard.css"
+import { YearDropdown } from "../components/dashboard/year-dropdown";
+import { CountriesDropdown } from "../components/dashboard/countries-dropdown";
+import { IntakeDropdown } from "../components/dashboard/intake-dropdown";
+import DashboardHeader from "../components/ui/dashboardHeader";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { fetchLeads } from "../../store/leadsSlice";
+import { fetchApplications } from "../../store/applicationSlice";
+import "./dashboard.css";
 
 export default function Dashboard() {
   // Filter states
-  const [dateRange, setDateRange] = useState("01/04/2025 - 10/06/2025")
-  const [selectedIntake, setSelectedIntake] = useState([])
-  const [selectedYear, setSelectedYear] = useState([])
-  const [selectedCountries, setSelectedCountries] = useState([])
+  const [dateRange, setDateRange] = useState("01/04/2025 - 10/06/2025");
+  const [selectedIntake, setSelectedIntake] = useState([]);
+  const [selectedYear, setSelectedYear] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState([]);
 
   const dispatch = useDispatch();
   const { leads, loading, error } = useSelector((state) => state.leads);
+  const { applications, loading: loadingApps } = useSelector(
+    (state) => state.applications
+  );
 
   useEffect(() => {
     dispatch(fetchLeads());
+    dispatch(fetchApplications());
   }, [dispatch]);
 
   // Calculate lead statistics
-  const totalLeads = leads.length
+  const totalLeads = leads.length;
 
-  const connectedLeads = leads.filter((lead) => lead.followUps[0]?.status === "Connected").length
+  const connectedLeads = leads.filter(
+    (lead) => lead.followUps[0]?.status === "Connected"
+  ).length;
 
-  const notConnectedLeads = leads.filter((lead) => lead.followUps[0]?.status === "Not Connected").length
+  const notConnectedLeads = leads.filter(
+    (lead) => lead.followUps[0]?.status === "Not Connected"
+  ).length;
 
-  const rejectedLeads = leads.filter((lead) => lead.followUps[0]?.status === "Rejected").length
+  const rejectedLeads = leads.filter(
+    (lead) => lead.followUps[0]?.status === "Rejected"
+  ).length;
 
   // Get 5 most recent leads
-  const recentLeads = leads.slice(0, 5)
+  const recentLeads = leads.slice(0, 5);
   console.log("Recent Leads:", recentLeads);
+
+  //calculate applications statistics
+  const totalApplications = applications.length;
+  const submittedApplications = applications.filter(
+    (app) => app.status === "Application Submitted"
+  ).length;
+  const offerApplications = applications.filter(
+    (app) => app.status === "Offer Received"
+  ).length;
+  const rejectedApplications = applications.filter(
+    (app) => app.status === "Rejected"
+  ).length;
+
+  const recentApplications = applications.slice(0, 5);
+  console.log("Recent applications:", recentApplications);
+
   // Sample data for recent applications
-  const recentApplications = [
-    {
-      id: 101,
-      student: "Alex Turner",
-      university: "Oxford University",
-      program: "Computer Science",
-      date: "2025-06-01",
-      status: "Submitted",
-    },
-    {
-      id: 102,
-      student: "Olivia Martinez",
-      university: "Cambridge University",
-      program: "Business Administration",
-      date: "2025-05-29",
-      status: "Under Review",
-    },
-    {
-      id: 103,
-      student: "Daniel Lee",
-      university: "Harvard University",
-      program: "Medicine",
-      date: "2025-05-28",
-      status: "Accepted",
-    },
-    {
-      id: 104,
-      student: "Sophia Chen",
-      university: "MIT",
-      program: "Engineering",
-      date: "2025-05-27",
-      status: "Submitted",
-    },
-    {
-      id: 105,
-      student: "William Johnson",
-      university: "Stanford University",
-      program: "Law",
-      date: "2025-05-26",
-      status: "Under Review",
-    },
-  ]
 
   // Sample data for upcoming tasks
   const upcomingTasks = [
-    { id: 201, task: "Follow up with John Smith", dueDate: "2025-06-03", priority: "High" },
-    { id: 202, task: "Review Emma Johnson's application", dueDate: "2025-06-04", priority: "Medium" },
-    { id: 203, task: "Send offer letter to Daniel Lee", dueDate: "2025-06-05", priority: "High" },
-    { id: 204, task: "Schedule interview with Sophia Chen", dueDate: "2025-06-06", priority: "Medium" },
-    { id: 205, task: "Update William Johnson's documents", dueDate: "2025-06-07", priority: "Low" },
-  ]
+    {
+      id: 201,
+      task: "Follow up with John Smith",
+      dueDate: "2025-06-03",
+      priority: "High",
+    },
+    {
+      id: 202,
+      task: "Review Emma Johnson's application",
+      dueDate: "2025-06-04",
+      priority: "Medium",
+    },
+    {
+      id: 203,
+      task: "Send offer letter to Daniel Lee",
+      dueDate: "2025-06-05",
+      priority: "High",
+    },
+    {
+      id: 204,
+      task: "Schedule interview with Sophia Chen",
+      dueDate: "2025-06-06",
+      priority: "Medium",
+    },
+    {
+      id: 205,
+      task: "Update William Johnson's documents",
+      dueDate: "2025-06-07",
+      priority: "Low",
+    },
+  ];
+
+  const tdStyle = {
+  padding: '10px',
+  fontSize: '14px',
+  textAlign: 'left',
+  verticalAlign: 'top'
+}
 
   // Sample data for top countries
   const topCountries = [
@@ -104,7 +136,7 @@ export default function Dashboard() {
     { id: 303, country: "China", applications: 25, percentage: 16.7 },
     { id: 304, country: "United Kingdom", applications: 15, percentage: 10 },
     { id: 305, country: "Canada", applications: 10, percentage: 6.7 },
-  ]
+  ];
 
   const handleApplyFilter = () => {
     // Filter logic would go here
@@ -113,8 +145,8 @@ export default function Dashboard() {
       selectedIntake,
       selectedYear,
       selectedCountries,
-    })
-  }
+    });
+  };
 
   return (
     <div>
@@ -126,9 +158,15 @@ export default function Dashboard() {
         <div className="filter-section">
           <div className="filter-grid">
             <DateRangePicker value={dateRange} onChange={setDateRange} />
-            <IntakeDropdown value={selectedIntake} onChange={setSelectedIntake} />
+            <IntakeDropdown
+              value={selectedIntake}
+              onChange={setSelectedIntake}
+            />
             <YearDropdown value={selectedYear} onChange={setSelectedYear} />
-            <CountriesDropdown value={selectedCountries} onChange={setSelectedCountries} />
+            <CountriesDropdown
+              value={selectedCountries}
+              onChange={setSelectedCountries}
+            />
           </div>
           <div className="filter-actions">
             <Button onClick={handleApplyFilter}>Apply Filter</Button>
@@ -139,7 +177,12 @@ export default function Dashboard() {
         <div className="dashboard-section">
           <SectionHeader title="Leads Management" />
           <div className="stats-grid">
-            <StatCard title="Total Leads" value={totalLeads.toString()} icon={<UsersIcon />} accentColor="blue" />
+            <StatCard
+              title="Total Leads"
+              value={totalLeads.toString()}
+              icon={<UsersIcon />}
+              accentColor="blue"
+            />
             <StatCard
               title="Connected"
               value={connectedLeads.toString()}
@@ -152,18 +195,43 @@ export default function Dashboard() {
               icon={<AlertCircleIcon />}
               accentColor="orange"
             />
-            <StatCard title="Rejected" value={rejectedLeads.toString()} icon={<XCircleIcon />} accentColor="red" />
+            <StatCard
+              title="Rejected"
+              value={rejectedLeads.toString()}
+              icon={<XCircleIcon />}
+              accentColor="red"
+            />
           </div>
         </div>
 
         {/* Applications Overview Section */}
         <div className="dashboard-section">
-          <SectionHeader title="Applications Overview" />
+          <SectionHeader title="Applications Summary" />
           <div className="stats-grid">
-            <StatCard title="All Applications" value="26" icon={<FileTextIcon />} accentColor="blue" />
-            <StatCard title="Offers" value="6" icon={<GiftIcon />} accentColor="green" />
-            <StatCard title="Payments" value="1" icon={<CreditCardIcon />} accentColor="purple" />
-            <StatCard title="Visas Received" value="1" icon={<StampIcon />} accentColor="teal" />
+            <StatCard
+              title="Total Applications"
+              value={totalApplications.toString()}
+              icon={<FileTextIcon />}
+              accentColor="blue"
+            />
+            <StatCard
+              title="Submitted"
+              value={submittedApplications.toString()}
+              icon={<GiftIcon />}
+              accentColor="green"
+            />
+            <StatCard
+              title="Offer Received"
+              value={offerApplications.toString()}
+              icon={<CreditCardIcon />}
+              accentColor="purple"
+            />
+            <StatCard
+              title="Rejected"
+              value={rejectedApplications.toString()}
+              icon={<XCircleIcon />}
+              accentColor="red"
+            />
           </div>
         </div>
 
@@ -176,7 +244,9 @@ export default function Dashboard() {
                 <div className="chart-placeholder-content">
                   <BarChart3Icon className="chart-icon" />
                   <p className="chart-title">Lead Conversion Chart</p>
-                  <p className="chart-subtitle">(Chart visualization would go here)</p>
+                  <p className="chart-subtitle">
+                    (Chart visualization would go here)
+                  </p>
                 </div>
               </div>
             </ChartCard>
@@ -185,7 +255,9 @@ export default function Dashboard() {
                 <div className="chart-placeholder-content">
                   <PieChartIcon className="chart-icon" />
                   <p className="chart-title">Application Status Chart</p>
-                  <p className="chart-subtitle">(Chart visualization would go here)</p>
+                  <p className="chart-subtitle">
+                    (Chart visualization would go here)
+                  </p>
                 </div>
               </div>
             </ChartCard>
@@ -213,22 +285,22 @@ export default function Dashboard() {
               {
                 header: "Name",
                 accessor: "fullname",
-                cell: (value) => value || "N/A"
+                cell: (value) => value || "N/A",
               },
               {
                 header: "Email",
                 accessor: "email",
-                cell: (value) => value || "N/A"
+                cell: (value) => value || "N/A",
               },
               {
                 header: "Phone",
                 accessor: "phone",
-                cell: (value) => value || "N/A"
+                cell: (value) => value || "N/A",
               },
               {
                 header: "Source",
                 accessor: (row) => row.followUps?.[0]?.mode || "N/A",
-                cell: (value) => value
+                cell: (value) => value,
               },
               {
                 header: "Date",
@@ -239,18 +311,20 @@ export default function Dashboard() {
                   } catch {
                     return "Invalid Date";
                   }
-                }
+                },
               },
               {
                 header: "Status",
                 accessor: (row) => row.followUps?.[0]?.status || "N/A",
                 cell: (value) => (
                   <span
-                    className={`status-badge status-${String(value).toLowerCase().replace(/\s+/g, "-")}`}
+                    className={`status-badge status-${String(value)
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
                   >
                     {value}
                   </span>
-                )
+                ),
               },
             ]}
             data={recentLeads}
@@ -274,28 +348,32 @@ export default function Dashboard() {
               </Button>
             }
           />
-          <DataTable
-            title="Latest Application Activities"
-            columns={[
-              { header: "Student", accessor: "student" },
-              { header: "University", accessor: "university" },
-              { header: "Program", accessor: "program" },
-              { header: "Date", accessor: "date" },
-              {
-                header: "Status",
-                accessor: "status",
-                cell: (value) => (
-                  <span className={`status-badge status-${value.toLowerCase().replace(" ", "-")}`}>{value}</span>
-                ),
-              },
-            ]}
-            data={recentApplications}
-            action={
-              <Button variant="ghost" size="sm">
-                Export
-              </Button>
-            }
-          />
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={tdStyle}>Ref No</th>
+                <th style={tdStyle}>Name</th>
+                <th style={tdStyle}>Email</th>
+                <th style={tdStyle}>Phone</th>
+                <th style={tdStyle}>University</th>
+                <th style={tdStyle}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {applications.slice(0, 5).map((app, idx) => (
+                <tr key={idx}>
+                  <td style={tdStyle}>{app.referenceNo}</td>
+                  <td style={tdStyle}>{app.lead?.fullname || "N/A"}</td>
+                  <td style={tdStyle}>{app.lead?.email || "N/A"}</td>
+                  <td style={tdStyle}>{app.lead?.phone || "N/A"}</td>
+                  <td style={tdStyle}>
+                    {app.courseDetails?.[0]?.institute || "N/A"}
+                  </td>
+                  <td style={tdStyle}>{app.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Bottom Grid Section */}
@@ -307,7 +385,9 @@ export default function Dashboard() {
               <ul className="task-list">
                 {upcomingTasks.map((task) => (
                   <li key={task.id} className="task-item">
-                    <div className={`priority-dot priority-${task.priority.toLowerCase()}`} />
+                    <div
+                      className={`priority-dot priority-${task.priority.toLowerCase()}`}
+                    />
                     <div className="task-content">
                       <p className="task-title">{task.task}</p>
                       <p className="task-date">
@@ -315,7 +395,11 @@ export default function Dashboard() {
                         Due: {task.dueDate}
                       </p>
                     </div>
-                    <span className={`priority-badge priority-${task.priority.toLowerCase()}`}>{task.priority}</span>
+                    <span
+                      className={`priority-badge priority-${task.priority.toLowerCase()}`}
+                    >
+                      {task.priority}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -337,12 +421,19 @@ export default function Dashboard() {
                     <MapPinIcon className="country-icon" />
                     <div className="country-content">
                       <p className="country-name">{country.country}</p>
-                      <p className="country-applications">{country.applications} applications</p>
+                      <p className="country-applications">
+                        {country.applications} applications
+                      </p>
                     </div>
                     <div className="country-stats">
-                      <span className="country-percentage">{country.percentage}%</span>
+                      <span className="country-percentage">
+                        {country.percentage}%
+                      </span>
                       <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${country.percentage}%` }} />
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${country.percentage}%` }}
+                        />
                       </div>
                     </div>
                   </li>
@@ -361,13 +452,33 @@ export default function Dashboard() {
         <div className="dashboard-section">
           <SectionHeader title="Monthly Performance" />
           <div className="stats-grid">
-            <StatCard title="Growth Rate" value="12.5%" icon={<TrendingUpIcon />} accentColor="purple" />
-            <StatCard title="Conversion Rate" value="24.8%" icon={<BarChart3Icon />} accentColor="teal" />
-            <StatCard title="Avg. Response Time" value="4.2h" icon={<AlertCircleIcon />} accentColor="orange" />
-            <StatCard title="Active Countries" value="28" icon={<MapPinIcon />} accentColor="blue" />
+            <StatCard
+              title="Growth Rate"
+              value="12.5%"
+              icon={<TrendingUpIcon />}
+              accentColor="purple"
+            />
+            <StatCard
+              title="Conversion Rate"
+              value="24.8%"
+              icon={<BarChart3Icon />}
+              accentColor="teal"
+            />
+            <StatCard
+              title="Avg. Response Time"
+              value="4.2h"
+              icon={<AlertCircleIcon />}
+              accentColor="orange"
+            />
+            <StatCard
+              title="Active Countries"
+              value="28"
+              icon={<MapPinIcon />}
+              accentColor="blue"
+            />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

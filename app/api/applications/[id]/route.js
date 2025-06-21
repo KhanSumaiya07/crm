@@ -15,3 +15,12 @@ export async function PUT(req, { params }) {
   const updated = await Application.findByIdAndUpdate(params.id, body, { new: true }).populate('lead');
   return new Response(JSON.stringify(updated), { status: 200 });
 }
+
+export async function DELETE(req, { params }) {
+  await connectDB();
+  const deleted = await Application.findByIdAndDelete(params.id);
+  if (!deleted) return new Response("Not found", { status: 404 });
+  return new Response(JSON.stringify({ message: "Application deleted successfully" }), {
+    status: 200,
+  });
+}

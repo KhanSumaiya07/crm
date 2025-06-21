@@ -116,6 +116,40 @@ const Sidebar = ({ onToggle }) => {
                 </li>
               </ul>
             </li>
+            {/* Counsellor Dropdown */}
+<li>
+  <div
+    className={`sidebar-dropdown ${pathname.startsWith("/dashboard/counsellor") ? "sidebar-dropdown-active" : ""}`}
+    onClick={() => toggleDropdown("counsellor")}
+  >
+    <UserRoundIcon className="sidebar-dropdown-icon" />
+    <span className="sidebar-dropdown-text">Counsellor</span>
+    <ChevronDownIcon
+      className={`sidebar-dropdown-arrow ${openDropdown === "counsellor" ? "sidebar-dropdown-arrow-rotated" : ""}`}
+    />
+    {!isExpanded && <span className="sidebar-tooltip">Counsellor</span>}
+  </div>
+
+  <ul className={`sidebar-submenu ${openDropdown === "counsellor" ? "sidebar-submenu-expanded" : ""}`}>
+    <li>
+      <Link
+        href="/dashboard/counsellor/add"
+        className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/add" ? "sidebar-submenu-item-active" : ""}`}
+      >
+        <span>Add Counsellor</span>
+      </Link>
+    </li>
+    <li>
+      <Link
+        href="/dashboard/counsellor/manage"
+        className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/manage" ? "sidebar-submenu-item-active" : ""}`}
+      >
+        <span>Manage Counsellor</span>
+      </Link>
+    </li>
+  </ul>
+</li>
+
 
             {/* Application Dropdown */}
             <li>

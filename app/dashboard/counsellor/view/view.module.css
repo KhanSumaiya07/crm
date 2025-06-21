@@ -1,0 +1,105 @@
+.viewContainer {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: #f0f4f8;
+  min-height: 70vh;
+  align-items: flex-start; /* Changed from center to flex-start */
+}
+
+.card {
+  background: white;
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 5vh; /* Add space from top */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #0070f3;
+  padding-bottom: 0.5rem;
+}
+
+.card p {
+  font-size: 1.05rem;
+  margin: 0.7rem 0;
+  color: #2d3748;
+}
+
+.card strong {
+  color: #1a202c;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.editBtn {
+  background: #0070f3;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 112, 243, 0.3);
+}
+
+.editBtn:hover {
+  background: #0059c1;
+}
+
+.backBtn {
+  background: #e2e8f0;
+  color: #2d3748;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.backBtn:hover {
+  background: #cbd5e0;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  margin: 0.5rem 0;
+  border: 1px solid #cbd5e0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border 0.3s;
+}
+
+.input:focus {
+  border-color: #3182ce;
+  outline: none;
+}
+
+.loading {
+  font-size: 18px;
+  text-align: center;
+  padding-top: 2rem;
+}

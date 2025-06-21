@@ -10,18 +10,24 @@
   --font-color: #1f1f1f;
   --subtle-text: #6b7280;
   --border-color: #dbe2e8;
+  
+
+
 
   /* 🅰️ Typography - Desktop base */
   /* --font-family:'Inter', sans-serif; */
 }
+
+
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+
 }
 
 body {
-  font-family: "Mulish", sans-serif;
+
   
   background-color: var(--background-color);
 }

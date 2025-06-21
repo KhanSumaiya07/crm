@@ -1,0 +1,119 @@
+.formContainer {
+  width: 100%;
+  max-width: 100%;
+  padding: 2rem;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  padding-bottom: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  position: relative;
+}
+
+.step.active {
+  font-weight: 600;
+  color: #007bff;
+  border-bottom: 3px solid #007bff;
+}
+
+.label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  margin-bottom: 1.2rem;
+  transition: 0.2s ease;
+}
+
+.input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.subTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 1.8rem 0 1rem;
+  color: #111;
+}
+
+.courseBox {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 10px 18px;
+  background: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn:hover {
+  background: #d5d5d5;
+}
+
+.btnPrimary {
+  padding: 10px 18px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btnPrimary:hover {
+  background: #0069d9;
+}
