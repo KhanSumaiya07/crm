@@ -1,13 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { BellIcon, UserIcon } from "lucide-react"
-import Image from "next/image"
-import "./navbar.css"
+import { useSelector, useDispatch } from "react-redux";
+import { BellIcon, UserIcon, LogOut } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { logoutUser } from "../../../../store/userSlice"; // adjust path if needed
+import "./navbar.css";
 
 const Navbar = () => {
-  // Replace Firebase auth with a static username
-  const [userName] = useState("User")
+  
+
+  const userName = useSelector((state) => state.user.name) || "User";
+
+  
 
   return (
     <div className="navbar">
@@ -27,10 +33,13 @@ const Navbar = () => {
           <div className="navbar-avatar">
             <UserIcon className="navbar-avatar-icon" />
           </div>
+
+         
+          
         </div>
       </nav>
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

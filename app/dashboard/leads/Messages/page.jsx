@@ -9,13 +9,21 @@ export default function MessageLeadsPage() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const fetchLeads = async () => {
+  const fetchLeads = async () => {
+    try {
       const res = await fetch('/api/leads/list');
+      if (!res.ok) throw new Error("Failed to fetch leads");
       const data = await res.json();
-      setLeads(data);
-    };
-    fetchLeads();
-  }, []);
+
+      // Ensure data is always an array
+      setLeads(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error loading leads:", err);
+      setLeads([]); // fallback
+    }
+  };
+  fetchLeads();
+}, []);
 
   const toggleSelect = (lead) => {
     setSelectedLeads((prev) =>

@@ -3,6 +3,7 @@ import { Providers } from "../store/Providers"; // ✅ Fix this line
 
 
 import {Onest} from "next/font/google"
+import { ToastContainer } from "react-toastify";
 
 const onest = Onest({
   subsets: ['latin'],
@@ -18,7 +19,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={onest.className}>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+           <ToastContainer position="top-right" />
+          {children}
+          </Providers>
       </body>
     </html>
   );

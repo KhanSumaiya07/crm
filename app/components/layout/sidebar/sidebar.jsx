@@ -11,29 +11,36 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useDispatch, useSelector } from "react-redux"
+import { toast } from "react-toastify"
+import { logoutUser } from "../../../../store/userSlice"
 import "./sidebar.css"
 
 const Sidebar = ({ onToggle }) => {
-  const [isExpanded, setIsExpanded] = useState(false) // Start collapsed
-  const [openDropdown, setOpenDropdown] = useState(null)
+  const dispatch = useDispatch()
+  const router = useRouter()
   const pathname = usePathname()
+  const role = useSelector((state) => state.user.role)
+
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState(null)
 
   const handleToggle = () => {
     const newState = !isExpanded
     setIsExpanded(newState)
-    // Close all dropdowns when collapsing
-    if (!newState) {
-      setOpenDropdown(null)
-    }
-    // Notify parent component about the toggle
-    if (onToggle) {
-      onToggle(newState)
-    }
+    if (!newState) setOpenDropdown(null)
+    if (onToggle) onToggle(newState)
+  }
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    toast.info("Logged out")
+    router.push("/login")
   }
 
   const toggleDropdown = (dropdownName) => {
-    // Allow dropdown toggle when sidebar is expanded or when hovering
     setOpenDropdown(openDropdown === dropdownName ? null : dropdownName)
   }
 
@@ -46,36 +53,19 @@ const Sidebar = ({ onToggle }) => {
       <div className="sidebar-container">
         <div className="sidebar-menu">
           <ul className="sidebar-menu-links">
-            {/* Dashboard */}
+            {/* ✅ Dashboard - Common */}
             <li>
               <Link
                 href="/dashboard"
                 className={`sidebar-link ${pathname === "/dashboard" ? "sidebar-link-active" : ""}`}
               >
-                <span className="sidebar-icon">
-                  {/* Dashboard Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M18.1522 5.59135C18.8642 6.164 19.2822 7.02551 19.2913 7.93918L19.2826 15.9131C19.2826 18.079 17.5268 19.8348 15.3609 19.8348H13.6217C12.5734 19.8348 11.7222 18.9875 11.7174 17.9392V14.3392C11.7174 14.0606 11.4916 13.8348 11.213 13.8348H8.60435C8.46907 13.8348 8.33945 13.8891 8.24461 13.9856C8.14977 14.0821 8.09767 14.2126 8.1 14.3479V15.7218C8.1 16.154 7.74961 16.5044 7.31739 16.5044C6.88517 16.5044 6.53478 16.154 6.53478 15.7218V14.3479C6.53478 13.7967 6.75374 13.2681 7.14349 12.8783C7.53324 12.4886 8.06185 12.2696 8.61304 12.2696H11.2217C12.3661 12.2744 13.2913 13.2035 13.2913 14.3479V17.9392C13.2913 18.1217 13.4392 18.2696 13.6217 18.2696H15.4043C16.701 18.2696 17.7522 17.2185 17.7522 15.9218V7.95657C17.7458 7.51531 17.5415 7.10027 17.1957 6.82613L11.187 2.03483C10.4293 1.41103 9.33595 1.41103 8.57826 2.03483L6.64783 3.47831C6.29004 3.73524 5.79172 3.65348 5.53478 3.2957C5.27785 2.93791 5.35961 2.43959 5.71739 2.18266L7.62174 0.800047C8.94214 -0.261311 10.8231 -0.261311 12.1435 0.800047L18.1522 5.59135ZM4.42174 18.2609H8.42174V18.2783C8.85396 18.2783 9.20435 18.6287 9.20435 19.0609C9.20435 19.4931 8.85396 19.8435 8.42174 19.8435H4.42174C2.25781 19.8387 0.504782 18.0857 0.5 15.9218V7.95657C0.513835 7.03615 0.945876 6.17206 1.67391 5.60874L2.39565 5.06961C2.73552 4.90939 3.14129 5.01332 3.36229 5.3172C3.58329 5.62107 3.55714 6.03912 3.3 6.31309L2.59565 6.83483C2.26191 7.1121 2.06776 7.52268 2.06522 7.95657V15.9131C2.07474 17.2092 3.12562 18.2562 4.42174 18.2609Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-
-
-                </span>
-                <span className="sidebar-link-text">Dashboard</span>
+                <HomeIcon className="sidebar-link-icon" />
+                <span className="sidebar-link-text">Home</span>
+                {!isExpanded && <span className="sidebar-tooltip">Home</span>}
               </Link>
             </li>
 
-            {/* Leads Management Dropdown */}
+            {/* ✅ Leads - Full for both Admin & Counsellor */}
             <li>
               <div
                 className={`sidebar-dropdown ${pathname.startsWith("/dashboard/leads") ? "sidebar-dropdown-active" : ""}`}
@@ -102,8 +92,10 @@ const Sidebar = ({ onToggle }) => {
 
                 </span>
                 <span className="sidebar-dropdown-text">Leads Management</span>
-                <ChevronDownIcon className={`sidebar-dropdown-arrow ${openDropdown === "leads" ? "sidebar-dropdown-arrow-rotated" : ""}`} />
-                {!isExpanded && <span className="sidebar-tooltip">Leads Management</span>}
+                <ChevronDownIcon
+                  className={`sidebar-dropdown-arrow ${openDropdown === "leads" ? "sidebar-dropdown-arrow-rotated" : ""}`}
+                />
+                {!isExpanded && <span className="sidebar-tooltip">Leads</span>}
               </div>
 
               <ul className={`sidebar-submenu ${openDropdown === "leads" ? "sidebar-submenu-expanded" : ""}`}>
@@ -111,84 +103,137 @@ const Sidebar = ({ onToggle }) => {
                 <li><Link href="/dashboard/leads/viewLeads" className={`sidebar-submenu-item ${pathname === "/dashboard/leads/viewLeads" ? "sidebar-submenu-item-active" : ""}`}><span>View</span></Link></li>
                 <li><Link href="/dashboard/leads/followup" className={`sidebar-submenu-item ${pathname === "/dashboard/leads/followup" ? "sidebar-submenu-item-active" : ""}`}><span>Manage Follow-ups</span></Link></li>
                 <li>
-                  <Link href="/dashboard/leads/source" className={`sidebar-submenu-item ${pathname === "/dashboard/leads/source" ? "sidebar-submenu-item-active" : ""}`}><span>View Lead Source</span></Link>
-                  <Link href="/dashboard/leads/Messages" className={`sidebar-submenu-item ${pathname === "/dashboard/leads/Messages" ? "sidebar-submenu-item-active" : ""}`}><span>Email messages</span></Link>
+                  <Link
+                    href="/dashboard/leads/add"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/add" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>Add</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/leads/viewLeads"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/viewLeads" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>View</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/leads/followup"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/followup" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>Manage Follow-ups</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/leads/source"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/source" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>View Lead Source</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/leads/Messages"
+                    className={`sidebar-submenu-item ${pathname === "/dashboard/leads/Messages" ? "sidebar-submenu-item-active" : ""}`}
+                  >
+                    <span>Email Messages</span>
+                  </Link>
                 </li>
               </ul>
             </li>
-            {/* Counsellor Dropdown */}
-<li>
-  <div
-    className={`sidebar-dropdown ${pathname.startsWith("/dashboard/counsellor") ? "sidebar-dropdown-active" : ""}`}
-    onClick={() => toggleDropdown("counsellor")}
-  >
-    <UserRoundIcon className="sidebar-dropdown-icon" />
-    <span className="sidebar-dropdown-text">Counsellor</span>
-    <ChevronDownIcon
-      className={`sidebar-dropdown-arrow ${openDropdown === "counsellor" ? "sidebar-dropdown-arrow-rotated" : ""}`}
-    />
-    {!isExpanded && <span className="sidebar-tooltip">Counsellor</span>}
-  </div>
 
-  <ul className={`sidebar-submenu ${openDropdown === "counsellor" ? "sidebar-submenu-expanded" : ""}`}>
-    <li>
-      <Link
-        href="/dashboard/counsellor/add"
-        className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/add" ? "sidebar-submenu-item-active" : ""}`}
-      >
-        <span>Add Counsellor</span>
-      </Link>
-    </li>
-    <li>
-      <Link
-        href="/dashboard/counsellor/manage"
-        className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/manage" ? "sidebar-submenu-item-active" : ""}`}
-      >
-        <span>Manage Counsellor</span>
-      </Link>
-    </li>
-  </ul>
-</li>
+            {/* ✅ Counsellor Management - Admin Only */}
+            {role === "admin" && (
+              <li>
+                <div
+                  className={`sidebar-dropdown ${pathname.startsWith("/dashboard/counsellor") ? "sidebar-dropdown-active" : ""}`}
+                  onClick={() => toggleDropdown("counsellor")}
+                >
+                  <UserRoundIcon className="sidebar-dropdown-icon" />
+                  <span className="sidebar-dropdown-text">Counsellor</span>
+                  <ChevronDownIcon
+                    className={`sidebar-dropdown-arrow ${openDropdown === "counsellor" ? "sidebar-dropdown-arrow-rotated" : ""}`}
+                  />
+                  {!isExpanded && <span className="sidebar-tooltip">Counsellor</span>}
+                </div>
 
+                <ul className={`sidebar-submenu ${openDropdown === "counsellor" ? "sidebar-submenu-expanded" : ""}`}>
+                  <li>
+                    <Link
+                      href="/dashboard/counsellor/add"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/add" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>Add Counsellor</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/dashboard/counsellor/manage"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/counsellor/manage" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>Manage Counsellor</span>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            )}
 
-            {/* Application Dropdown */}
-            <li>
-              <div
-                className={`sidebar-dropdown ${pathname.startsWith("/dashboard/application") ? "sidebar-dropdown-active" : ""}`}
-                onClick={() => toggleDropdown("application")}
-              >
-                <span className="sidebar-icon">
-                  {/* Application Icon */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="20"
-                    viewBox="0 0 18 20"
-                    fill="none"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M17.2916 5.55651L12.2421 0.244651C12.1005 0.0956456 11.9061 0.0120816 11.7027 0.0120816H11.4974C11.4884 0.0111764 11.48 0.00864398 11.4717 0.00613002C11.4616 0.00305062 11.4515 0 11.4405 0C11.4289 0 11.4184 0.00312576 11.408 0.00624229C11.3998 0.00871902 11.3915 0.0111899 11.3827 0.0120816H5.07002C2.5926 0.0120816 0.5 2.07702 0.5 4.52152V8.68059C0.5 9.09741 0.834975 9.43569 1.24771 9.43569C1.66045 9.43569 1.99543 9.09741 1.99543 8.68059V4.52152C1.99543 2.89554 3.40312 1.52228 5.07002 1.52228H10.6928V3.68487C10.6928 5.52731 12.1763 7.02844 13.9997 7.03247H14.0007C14.4134 7.03247 14.7474 6.69519 14.7484 6.27939C14.7494 5.86157 14.4154 5.52328 14.0027 5.52228C13.0018 5.52026 12.1882 4.6957 12.1882 3.68487V2.36899L16.0046 6.38309V15.3083C16.0046 17.0028 14.6168 18.4898 13.0347 18.4898H5.07002C3.34629 18.4898 1.99543 17.0924 1.99543 15.3083V12.7853C1.99543 12.3685 1.66045 12.0302 1.24771 12.0302C0.834975 12.0302 0.5 12.3685 0.5 12.7853V15.3083C0.5 17.9391 2.50786 20 5.07002 20H13.0347C15.4553 20 17.5 17.8515 17.5 15.3083V6.08004C17.5 5.88472 17.4252 5.69746 17.2916 5.55651ZM5.87007 14.4053H11.2516C11.6644 14.4053 11.9993 14.0671 11.9993 13.6502C11.9993 13.2334 11.6644 12.8951 11.2516 12.8951H5.87007C5.45734 12.8951 5.12236 13.2334 5.12236 13.6502C5.12236 14.0671 5.45734 14.4053 5.87007 14.4053ZM9.21584 9.41948H5.87007C5.45734 9.41948 5.12236 9.0812 5.12236 8.66438C5.12236 8.24757 5.45734 7.90929 5.87007 7.90929H9.21584C9.62858 7.90929 9.96355 8.24757 9.96355 8.66438C9.96355 9.0812 9.62858 9.41948 9.21584 9.41948Z"
-                      fill="currentColor"
-                    />
-                  </svg>
+            {/* ✅ Application - Admin Only */}
+            {role === "admin" && (
+              <li>
+                <div
+                  className={`sidebar-dropdown ${pathname.startsWith("/dashboard/application") || pathname.startsWith("/dashboard/applications") ? "sidebar-dropdown-active" : ""}`}
+                  onClick={() => toggleDropdown("application")}
+                >
+                  <FileIcon className="sidebar-dropdown-icon" />
+                  <span className="sidebar-dropdown-text">Application</span>
+                  <ChevronDownIcon
+                    className={`sidebar-dropdown-arrow ${openDropdown === "application" ? "sidebar-dropdown-arrow-rotated" : ""}`}
+                  />
+                  {!isExpanded && <span className="sidebar-tooltip">Application</span>}
+                </div>
 
-                </span>
-                <span className="sidebar-dropdown-text">Application</span>
-                <ChevronDownIcon className={`sidebar-dropdown-arrow ${openDropdown === "application" ? "sidebar-dropdown-arrow-rotated" : ""}`} />
-                {!isExpanded && <span className="sidebar-tooltip">Application</span>}
-              </div>
+                <ul className={`sidebar-submenu ${openDropdown === "application" ? "sidebar-submenu-expanded" : ""}`}>
+                  <li>
+                    <Link
+                      href="/dashboard/applications/add"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/applications/add" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>Generate Application</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/dashboard/applications/view"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/applications/view" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>View Application</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/dashboard/application/followup"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/application/followup" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>Manage Application Followup</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/dashboard/application/tracking"
+                      className={`sidebar-submenu-item ${pathname === "/dashboard/application/tracking" ? "sidebar-submenu-item-active" : ""}`}
+                    >
+                      <span>Application Tracking History</span>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            )}
 
-              <ul className={`sidebar-submenu ${openDropdown === "application" ? "sidebar-submenu-expanded" : ""}`}>
-                <li><Link href="/dashboard/applications/add" className={`sidebar-submenu-item ${pathname === "/dashboard/applications/add" ? "sidebar-submenu-item-active" : ""}`}><span>Generate Application</span></Link></li>
-                <li><Link href="/dashboard/applications/view" className={`sidebar-submenu-item ${pathname === "/dashboard/applications/view" ? "sidebar-submenu-item-active" : ""}`}><span>View Application</span></Link></li>
-                <li><Link href="/dashboard/application/followup" className={`sidebar-submenu-item ${pathname === "/dashboard/application/followup" ? "sidebar-submenu-item-active" : ""}`}><span>Manage Application Followup</span></Link></li>
-                <li><Link href="/dashboard/application/tracking" className={`sidebar-submenu-item ${pathname === "/dashboard/application/tracking" ? "sidebar-submenu-item-active" : ""}`}><span>Application Tracking History</span></Link></li>
-              </ul>
-            </li>
-
-            {/* Countries Dropdown */}
+            {/* ✅ Countries - Both */}
             <li>
               <div
                 className={`sidebar-dropdown ${pathname.startsWith("/dashboard/countries") ? "sidebar-dropdown-active" : ""}`}
@@ -226,10 +271,11 @@ const Sidebar = ({ onToggle }) => {
 
         </div>
 
+        {/* ✅ Logout */}
         <div className="sidebar-footer">
           <ul className="sidebar-footer-list">
             <li>
-              <button onClick={() => console.log("Logout clicked")} className="sidebar-logout-button">
+              <button onClick={handleLogout} className="sidebar-logout-button">
                 <LogOutIcon className="sidebar-logout-icon" />
                 <span className="sidebar-logout-text">Logout</span>
                 {!isExpanded && <span className="sidebar-tooltip">Logout</span>}
